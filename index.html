@@ -46,12 +46,32 @@
   textarea:focus{outline:none; border-color:var(--red);}
 
   .file-drop{
-    border:1.5px dashed var(--border); border-radius:10px; padding:26px; text-align:center;
-    color:var(--grey); cursor:pointer; transition:.15s;
+    border:1.5px dashed var(--border); border-radius:10px; padding:16px; text-align:center;
+    color:var(--grey); cursor:pointer; transition:.15s; font-size:13.5px; margin-top:14px;
   }
   .file-drop:hover{border-color:var(--red);}
-  .file-drop img{max-height:160px; border-radius:8px; margin-top:10px;}
   #fileInput{display:none;}
+  .attach-row{margin-bottom:2px;}
+  #previewWrap{
+    margin-top:12px; background:var(--card2); border:1px solid var(--border); border-radius:10px;
+    padding:10px; display:flex; align-items:center; gap:12px;
+  }
+  #previewWrap img{max-height:70px; border-radius:6px;}
+  #removeImgBtn{
+    background:none; border:1px solid var(--border); color:var(--grey); padding:6px 10px;
+    border-radius:8px; font-size:12px; cursor:pointer; margin-left:auto;
+  }
+  #removeImgBtn:hover{border-color:var(--red); color:var(--red);}
+
+  .solution-box{
+    background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:14px 16px;
+    font-size:14px; line-height:1.7; color:#ddd; margin-bottom:10px;
+  }
+  .solution-box .step{margin-bottom:4px;}
+  .final-answer{
+    background:linear-gradient(90deg,var(--red-dim),transparent); border-left:3px solid var(--red);
+    padding:10px 16px; font-weight:700; font-size:14.5px; border-radius:6px; margin-bottom:6px;
+  }
 
   .row{display:flex; gap:12px; margin-top:16px; flex-wrap:wrap;}
   select{
@@ -179,21 +199,17 @@
   </header>
 
   <div class="card">
-    <div class="mode-toggle">
-      <button class="mode-btn active" id="modeTypeBtn" onclick="setMode('type')">✍️ Type my doubt</button>
-      <button class="mode-btn" id="modePhotoBtn" onclick="setMode('photo')">📷 Photo of my textbook</button>
-    </div>
+    <textarea id="doubtText" placeholder="e.g. I don't understand why mitochondria is called the powerhouse of the cell, how recursion works, or a physics/maths problem like 'a ball is thrown at 20 m/s, find max height'..."></textarea>
 
-    <div id="typeMode">
-      <textarea id="doubtText" placeholder="e.g. I don't understand why mitochondria is called the powerhouse of the cell, or how recursion actually works, or what entropy means..."></textarea>
-    </div>
-
-    <div id="photoMode" style="display:none;">
-      <div class="file-drop" onclick="document.getElementById('fileInput').click()">
-        <div id="dropLabel">📎 Click to upload a photo of your textbook page or handwritten doubt</div>
-        <img id="previewImg" style="display:none;">
+    <div class="attach-row">
+      <div class="file-drop" id="fileDrop" onclick="document.getElementById('fileInput').click()">
+        <div id="dropLabel">📎 Attach a photo of your textbook or working (optional)</div>
       </div>
       <input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)">
+      <div id="previewWrap" style="display:none;">
+        <img id="previewImg">
+        <button type="button" id="removeImgBtn" onclick="removeImage()">✕ Remove photo</button>
+      </div>
     </div>
 
     <div class="row">
@@ -220,6 +236,11 @@
   <div class="result card" id="resultCard">
     <div class="pill" id="resultPill">CONCEPT</div>
     <div class="explain-box" id="explainBox"></div>
+    <div id="solutionRender" style="display:none;">
+      <div class="section-label">Step-by-step solution</div>
+      <div class="solution-box" id="solutionSteps"></div>
+      <div class="final-answer" id="finalAnswer"></div>
+    </div>
     <div id="memeRender"></div>
     <div id="storyRender" style="display:none;">
       <div class="section-label">Relatable story</div>
@@ -247,19 +268,10 @@
 //   Local dev:          "http://localhost:8000/api/generate"
 const API_ENDPOINT = window.DOUBT2MEME_API || "/api/generate";
 
-let mode = 'type';
 let uploadedImageB64 = null;
 let uploadedImageMedia = null;
 let history = [];
 let lastResult = null;
-
-function setMode(m){
-  mode = m;
-  document.getElementById('modeTypeBtn').classList.toggle('active', m==='type');
-  document.getElementById('modePhotoBtn').classList.toggle('active', m==='photo');
-  document.getElementById('typeMode').style.display = m==='type' ? 'block':'none';
-  document.getElementById('photoMode').style.display = m==='photo' ? 'block':'none';
-}
 
 function handleFile(e){
   const file = e.target.files[0];
@@ -269,12 +281,19 @@ function handleFile(e){
     const dataUrl = evt.target.result;
     uploadedImageB64 = dataUrl.split(',')[1];
     uploadedImageMedia = file.type || 'image/jpeg';
-    const img = document.getElementById('previewImg');
-    img.src = dataUrl;
-    img.style.display = 'block';
-    document.getElementById('dropLabel').textContent = '✅ ' + file.name + ' — click to change';
+    document.getElementById('previewImg').src = dataUrl;
+    document.getElementById('previewWrap').style.display = 'flex';
+    document.getElementById('fileDrop').style.display = 'none';
   };
   reader.readAsDataURL(file);
+}
+
+function removeImage(){
+  uploadedImageB64 = null;
+  uploadedImageMedia = null;
+  document.getElementById('fileInput').value = '';
+  document.getElementById('previewWrap').style.display = 'none';
+  document.getElementById('fileDrop').style.display = 'block';
 }
 
 function showError(msg){
@@ -293,19 +312,18 @@ async function generate(retry){
   hideError();
   const vibe = document.getElementById('vibe').value;
   const subject = document.getElementById('subject').value;
+  const text = document.getElementById('doubtText').value.trim();
+
+  if(!text && !uploadedImageB64){
+    showError("Type your doubt, attach a photo, or both — at least one is needed.");
+    return;
+  }
 
   const requestBody = { vibe, subject: subject || undefined, retry: !!retry };
-
-  if(mode === 'photo'){
-    if(!uploadedImageB64){ showError("Please upload a photo first."); return; }
-    requestBody.mode = "image";
+  if(text) requestBody.text = text;
+  if(uploadedImageB64){
     requestBody.image_base64 = uploadedImageB64;
     requestBody.image_media_type = uploadedImageMedia;
-  } else {
-    const text = document.getElementById('doubtText').value.trim();
-    if(!text){ showError("Type your doubt first — even one confusing line works."); return; }
-    requestBody.mode = "text";
-    requestBody.text = text;
   }
 
   const btn = document.getElementById('genBtn');
@@ -327,6 +345,7 @@ async function generate(retry){
     const parsed = await response.json();
     if(!response.ok){ throw new Error(parsed.error || parsed.detail || "API error"); }
 
+
     renderResult(parsed);
     lastResult = parsed;
     history.unshift(parsed);
@@ -345,6 +364,17 @@ async function generate(retry){
 function renderResult(r){
   document.getElementById('resultPill').textContent = (r.subject || 'CONCEPT').toUpperCase() + ' · ' + (r.concept || '');
   document.getElementById('explainBox').innerHTML = '<b>What it actually means:</b> ' + escapeHtml(r.explanation || '');
+
+  const solutionRender = document.getElementById('solutionRender');
+  if(r.is_numerical && Array.isArray(r.solution_steps) && r.solution_steps.length){
+    solutionRender.style.display = 'block';
+    document.getElementById('solutionSteps').innerHTML = r.solution_steps
+      .map(step => '<div class="step">' + escapeHtml(step) + '</div>').join('');
+    document.getElementById('finalAnswer').textContent = r.final_answer
+      ? '✅ Final answer: ' + r.final_answer : '';
+  } else {
+    solutionRender.style.display = 'none';
+  }
 
   const memeDiv = document.getElementById('memeRender');
   memeDiv.innerHTML = '<div class="section-label">Meme</div>' + renderMeme(r);
