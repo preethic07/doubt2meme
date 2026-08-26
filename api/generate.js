@@ -3,7 +3,7 @@
 // Get a free key at: https://aistudio.google.com/apikey
 // In Vercel: Settings -> Environment Variables -> add GEMINI_API_KEY = your key -> Redeploy
 
-const MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash";
+const MODEL = process.env.GEMINI_MODEL || "gemini-2.0-flash";
 const GEMINI_URL = (key) =>
   `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`;
 
@@ -95,8 +95,9 @@ module.exports = async (req, res) => {
         contents: [{ role: "user", parts }],
         generationConfig: {
           temperature: 0.9,
-          maxOutputTokens: 1024,
+          maxOutputTokens: 2048,
           responseMimeType: "application/json",
+          thinkingConfig: { thinkingLevel: "low" },
         },
       }),
     });
@@ -110,7 +111,10 @@ module.exports = async (req, res) => {
 
     const candidate = data.candidates && data.candidates[0];
     const rawText = candidate && candidate.content && candidate.content.parts
-      ? candidate.content.parts.map((p) => p.text || "").join("\n")
+      ? candidate.content.parts
+          .filter((p) => !p.thought)
+          .map((p) => p.text || "")
+          .join("\n")
       : "";
 
     if (!rawText) {
