@@ -366,14 +366,6 @@ function renderMeme(r){
   const m = r.meme || {};
   const fmt = r.meme_format;
   const e = escapeHtml;
-
-  // Real pictorial meme, when the backend managed to caption one via Imgflip.
-  if(r.meme_image_url){
-    return `<div class="meme-shell"><div class="meme-header">Format: ${e((fmt||'meme').replace('_',' '))} · real meme image</div>
-      <img src="${e(r.meme_image_url)}" alt="Generated meme" style="width:100%; display:block;">
-      </div>`;
-  }
-
   if(fmt === 'drake'){
     return `<div class="meme-shell"><div class="meme-header">Format: Drake Preference</div>
       <div class="drake">
