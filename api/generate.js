@@ -3,7 +3,7 @@
 // Get a free key at: https://aistudio.google.com/apikey
 // In Vercel: Settings -> Environment Variables -> add GEMINI_API_KEY = your key -> Redeploy
 
-const MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash";
+const MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
 const GEMINI_URL = (key) =>
   `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`;
 
