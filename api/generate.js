@@ -2,108 +2,10 @@
 // Uses Google Gemini (FREE tier, no credit card required) instead of Anthropic.
 // Get a free key at: https://aistudio.google.com/apikey
 // In Vercel: Settings -> Environment Variables -> add GEMINI_API_KEY = your key -> Redeploy
-//
-// PICTORIAL MEMES (new): after Gemini writes the captions, we caption a REAL meme
-// template image via the Imgflip API (https://imgflip.com/api) and return its image
-// URL as `meme_image_url`. This needs two more env vars in Vercel:
-//   IMGFLIP_USERNAME = a dedicated Imgflip account username (make a new one, not personal)
-//   IMGFLIP_PASSWORD = that account's password
-// If those aren't set, or the Imgflip call fails for any reason, we simply skip
-// `meme_image_url` and the frontend falls back to the existing styled mockup — nothing
-// breaks either way.
 
 const MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
 const GEMINI_URL = (key) =>
   `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`;
-
-// Which real Imgflip template to search for, per meme_format.
-// panel_comic has no good single-template match, so it's intentionally left out —
-// it keeps using the existing 3-panel CSS render.
-const TEMPLATE_SEARCH_NAMES = {
-  drake: ["Drake Hotline Bling"],
-  expanding_brain: ["Expanding Brain", "Four Brain", "Galaxy Brain"],
-  distracted_boyfriend: ["Distracted Boyfriend"],
-  two_buttons: ["Two Buttons"],
-};
-
-// In-memory cache so a warm serverless instance doesn't refetch the template list
-// on every single request.
-let templateCache = null;
-let templateCacheAt = 0;
-const TEMPLATE_CACHE_MS = 30 * 60 * 1000; // 30 minutes
-
-async function getTemplates() {
-  const now = Date.now();
-  if (templateCache && now - templateCacheAt < TEMPLATE_CACHE_MS) return templateCache;
-  const resp = await fetch("https://api.imgflip.com/get_memes");
-  const data = await resp.json();
-  if (!data || !data.success) throw new Error("Could not fetch Imgflip template list");
-  templateCache = data.data.memes;
-  templateCacheAt = now;
-  return templateCache;
-}
-
-function findTemplate(memes, names) {
-  for (const name of names) {
-    const hit = memes.find((m) => m.name.toLowerCase() === name.toLowerCase());
-    if (hit) return hit;
-  }
-  for (const name of names) {
-    const hit = memes.find((m) => m.name.toLowerCase().includes(name.toLowerCase()));
-    if (hit) return hit;
-  }
-  return null;
-}
-
-// Map each meme_format's fields onto the template's text boxes, in the order
-// Imgflip expects them (top-to-bottom / left-to-right as drawn on the template).
-// Box order on Imgflip's templates isn't formally documented per-template, so if a
-// caption lands in an unexpected spot after you deploy, this ordering is the first
-// thing to tweak.
-function fieldsToBoxes(format, meme) {
-  if (format === "drake") return [meme.reject, meme.accept];
-  if (format === "expanding_brain") return [meme.level1, meme.level2, meme.level3, meme.level4];
-  if (format === "distracted_boyfriend") return [meme.boyfriend_label, meme.girlfriend_label, meme.other_girl_label];
-  if (format === "two_buttons") return [meme.button1, meme.button2, meme.sweating_label];
-  return null;
-}
-
-async function captionMemeImage(format, meme) {
-  const username = process.env.IMGFLIP_USERNAME;
-  const password = process.env.IMGFLIP_PASSWORD;
-  if (!username || !password) return null; // not configured — skip silently
-
-  const searchNames = TEMPLATE_SEARCH_NAMES[format];
-  if (!searchNames) return null; // e.g. panel_comic — no template mapping
-
-  const boxTexts = fieldsToBoxes(format, meme);
-  if (!boxTexts || boxTexts.some((t) => !t)) return null;
-
-  const memes = await getTemplates();
-  const template = findTemplate(memes, searchNames);
-  if (!template) return null;
-
-  // Only caption if the template's real box count matches what we're sending —
-  // mismatched counts are how captions end up in the wrong place.
-  if (template.box_count !== boxTexts.length) return null;
-
-  const form = new URLSearchParams();
-  form.set("template_id", template.id);
-  form.set("username", username);
-  form.set("password", password);
-  boxTexts.forEach((text, i) => {
-    form.set(`boxes[${i}][text]`, text);
-  });
-
-  const resp = await fetch("https://api.imgflip.com/caption_image", {
-    method: "POST",
-    headers: { "content-type": "application/x-www-form-urlencoded" },
-    body: form.toString(),
-  });
-  const data = await resp.json();
-  if (!data || !data.success) return null;
-  return data.data.url;
-}
 
 const SYSTEM_PROMPT_TEMPLATE = (vibe) => `You are Doubt2Meme, an AI that turns confusing academic doubts into memorable, ACCURATE learning content for students.
 
@@ -220,16 +122,6 @@ module.exports = async (req, res) => {
       parsed = extractJson(rawText);
     } catch (e) {
       return res.status(502).json({ error: "Model returned unparsable JSON. Try again." });
-    }
-
-    // Try to turn the captions into a real pictorial meme. This never blocks or
-    // fails the response — if anything goes wrong, we just omit meme_image_url
-    // and the frontend falls back to the existing styled mockup.
-    try {
-      const imageUrl = await captionMemeImage(parsed.meme_format, parsed.meme || {});
-      if (imageUrl) parsed.meme_image_url = imageUrl;
-    } catch (e) {
-      // swallow — pictorial meme is a nice-to-have, not a hard requirement
     }
 
     return res.status(200).json(parsed);
