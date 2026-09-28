@@ -11,7 +11,19 @@
 // You only NEED GEMINI_API_KEY to be set; the rest are optional extras.
 // In Vercel: Settings -> Environment Variables -> add each key -> Redeploy
 
-const MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash"; // gemini-2.5-flash and older are deprecated for new callers as of late 2026
+// MODEL FALLBACK: every Gemini model has its OWN free-tier quota. If the first
+// model runs out (429), we automatically try the next one, so the demo keeps
+// working. Set GEMINI_MODEL in Vercel to force one specific model first.
+const DEFAULT_MODELS = [
+  "gemini-3.8-flash",
+  "gemini-3.5-flash",
+  "gemini-3.1-flash-lite",
+  "gemini-3.5-flash-lite",
+  "gemini-3-flash-preview",
+];
+const MODELS = process.env.GEMINI_MODEL
+  ? [process.env.GEMINI_MODEL, ...DEFAULT_MODELS.filter((m) => m !== process.env.GEMINI_MODEL)]
+  : DEFAULT_MODELS;
 
 function getApiKeys() {
   const keys = [];
@@ -25,7 +37,7 @@ function getApiKeys() {
 }
 
 // The key is sent in the x-goog-api-key header (not the URL) so it never shows up in logs.
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
+const GEMINI_URL = (model) => `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
 // Quiz generation moved out of the main meme/comic/story/infographic prompts and
 // into its own on-demand endpoint (see QUIZ_PROMPT below) — the student now picks
@@ -365,56 +377,57 @@ function extractJson(raw) {
 // moving to the next only on quota/auth errors (429/403) or network failures —
 // any other failure is returned immediately since switching keys wouldn't help.
 async function callGeminiJSON(apiKeys, parts, maxOutputTokens) {
-  const requestBody = JSON.stringify({
+  const buildBody = (model) => JSON.stringify({
     contents: [{ role: "user", parts }],
     generationConfig: {
       // NOTE: no temperature/topP/topK — Google's Gemini 3.x migration guide says to strip them.
       maxOutputTokens,
       responseMimeType: "application/json",
-      // Gemini 3.x "thinks" before answering and those thinking tokens count toward
-      // maxOutputTokens. "low" keeps responses fast (well under Vercel's time limit)
-      // and leaves room for the full JSON so it never gets cut off mid-object.
-      ...(MODEL.startsWith("gemini-3") ? { thinkingConfig: { thinkingLevel: "low" } } : {}),
+      // Thinking tokens count toward maxOutputTokens; "low" keeps it fast and leaves room for the JSON.
+      ...(model.startsWith("gemini-3") ? { thinkingConfig: { thinkingLevel: "low" } } : {}),
     },
   });
 
   let lastError = null;
-  const RETRYABLE_STATUSES = new Set([429, 403, 503, 500]);
-  // A 503 ("model overloaded") is transient — the SAME key often succeeds a
-  // moment later, so retry it in place a couple of times (short backoff)
-  // before giving up on that key and moving to the next one.
+  // 429 = quota used up, 404 = model not available, 403 = key problem, 5xx = Google busy.
+  // For all of these, trying another model/key can help.
+  const TRY_NEXT = new Set([429, 403, 404, 400, 500, 503]);
   const OVERLOAD_RETRY_DELAYS_MS = [600, 1400];
 
-  for (let i = 0; i < apiKeys.length; i++) {
-    const apiKey = apiKeys[i];
-    let attempt = 0;
-
-    while (true) {
-      try {
-        const response = await fetch(GEMINI_URL, {
-          method: "POST",
-          headers: { "content-type": "application/json", "x-goog-api-key": apiKey },
-          body: requestBody,
-        });
-
-        const data = await response.json().catch(() => ({}));
+  // Try every model with the first key, then every model with the next key, and so on.
+  for (const apiKey of apiKeys) {
+    for (const model of MODELS) {
+      let attempt = 0;
+      while (true) {
+        let response, data;
+        try {
+          response = await fetch(GEMINI_URL(model), {
+            method: "POST",
+            headers: { "content-type": "application/json", "x-goog-api-key": apiKey },
+            body: buildBody(model),
+          });
+          data = await response.json().catch(() => ({}));
+        } catch (err) {
+          lastError = { status: 502, msg: err.message };
+          break; // network failure — try next model
+        }
 
         if (!response.ok) {
           const msg = (data && data.error && data.error.message) || "Gemini API error";
           const status = response.status;
-
-          // Overloaded/rate-limited on THIS key: back off and retry the same
-          // key a couple of times before moving on — switching keys too
-          // eagerly wastes quota on a problem a short wait usually fixes.
           if (status === 503 && attempt < OVERLOAD_RETRY_DELAYS_MS.length) {
             await new Promise((r) => setTimeout(r, OVERLOAD_RETRY_DELAYS_MS[attempt]));
             attempt++;
             continue;
           }
-
-          if (RETRYABLE_STATUSES.has(status) && i < apiKeys.length - 1) {
+          // 400 only means "try next" if it's about the model/config, not a bad request we sent.
+          if (status === 400 && !/model|thinking|config|not supported/i.test(msg)) {
+            return { ok: false, status, error: msg };
+          }
+          if (TRY_NEXT.has(status)) {
+            console.warn(`[gemini] ${model} failed with ${status}: ${msg.slice(0, 120)}`);
             lastError = { status, msg };
-            break; // move to next key
+            break; // try next model
           }
           return { ok: false, status, error: msg };
         }
@@ -429,28 +442,25 @@ async function callGeminiJSON(apiKeys, parts, maxOutputTokens) {
           return { ok: false, status: 502, error: "Gemini returned no content" + (reason ? " (" + reason + ")" : "") + ". Try again." };
         }
 
-        let parsed;
         try {
-          parsed = extractJson(rawText);
+          return { ok: true, data: extractJson(rawText), model };
         } catch (e) {
           const cutOff = candidate && candidate.finishReason === "MAX_TOKENS";
           return { ok: false, status: 502, error: cutOff
             ? "The answer was too long and got cut off. Try again or ask a narrower doubt."
             : "Model returned unparsable JSON. Try again." };
         }
-
-        return { ok: true, data: parsed };
-      } catch (err) {
-        lastError = { status: 502, msg: err.message };
-        break; // network/parse failure — move to next key
       }
     }
   }
 
+  const quota = lastError && lastError.status === 429;
   return {
     ok: false,
     status: (lastError && lastError.status) || 502,
-    error: "All configured API keys failed. Last error: " + ((lastError && lastError.msg) || "unknown"),
+    error: quota
+      ? "Free daily AI limit reached on all models. Add another key from a DIFFERENT Google account as GEMINI_API_KEY_2 in Vercel, or try again later."
+      : "All models/keys failed. Last error: " + ((lastError && lastError.msg) || "unknown"),
   };
 }
 
