@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doubt2Meme — Turn Confusion Into Recall</title>
+<meta name="description" content="Type or photograph a doubt. Get a verified explanation, plus a meme, comic, story or pictorial infographic you'll actually remember. Built for Hackwell 2.0.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Doubt2Meme — Turn Confusion Into Recall">
+<meta property="og:description" content="Type or photograph a doubt. Get a verified explanation, plus a meme, comic, story or pictorial infographic you'll actually remember.">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/72x72/1f9e0.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Doubt2Meme — Turn Confusion Into Recall">
+<meta name="twitter:description" content="Doubts in, memes and understanding out. Built for Hackwell 2.0.">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{
+  --bg:#0B0714; --bg2:#0F0A1C; --card:#171025; --card2:#211935; --border:#2E2447;
+  --violet:#9D5CFF; --violet-dim:#3A1F66; --gold:#FFC857; --danger:#FF5470;
+  --white:#FFFFFF; --grey:#C7BBDA; --grey2:#8B7FA3;
+}
+*{box-sizing:border-box; scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--white);
+  font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+a{color:inherit;}
+.container{max-width:1000px; margin:0 auto; padding:0 20px;}
+
+/* ---------- NAV ---------- */
+nav{
+  position:sticky; top:0; z-index:50; background:rgba(11,7,20,0.9); backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border);
+}
+.nav-inner{max-width:1000px; margin:0 auto; padding:14px 20px; display:flex; align-items:center; justify-content:space-between;}
+.nav-logo{font-weight:800; font-size:19px;}
+.nav-logo span{color:var(--violet);}
+.nav-links{display:flex; gap:22px; font-size:14px; font-weight:600; color:var(--grey);}
+.nav-links a{text-decoration:none; transition:.15s;}
+.nav-links a:hover{color:var(--gold);}
+.nav-cta{
+  background:var(--violet); color:#fff; padding:9px 18px; border-radius:20px; font-size:14px;
+  font-weight:700; text-decoration:none; white-space:nowrap;
+}
+@media(max-width:680px){ .nav-links{display:none;} }
+
+/* ---------- HERO ---------- */
+.hero{padding:64px 20px 56px; text-align:center; position:relative; overflow:hidden;}
+.hero::before{
+  content:''; position:absolute; top:-120px; left:50%; transform:translateX(-50%);
+  width:600px; height:400px; background:radial-gradient(circle, rgba(157,92,255,0.25), transparent 70%);
+  pointer-events:none;
+}
+.logo-badge{
+  display:inline-block; font-size:11px; letter-spacing:1.5px; font-weight:700;
+  color:var(--gold); background:var(--violet-dim); border:1px solid var(--violet);
+  padding:5px 12px; border-radius:20px; margin-bottom:18px; position:relative;
+}
+.hero h1{font-size:52px; margin:0 0 14px; font-weight:800; position:relative;}
+.hero h1 span{color:var(--violet);}
+.hero-hook{color:var(--gold); font-size:22px; font-weight:700; margin:0 0 10px; position:relative;}
+.hero p.tagline{color:var(--grey); font-size:18px; margin:0 auto 28px; max-width:600px; position:relative;}
+.hero-cta{
+  display:inline-block; background:linear-gradient(135deg, var(--violet), #6E2FD9); color:#fff;
+  padding:15px 34px; border-radius:12px; font-weight:700; font-size:16px; text-decoration:none;
+  box-shadow:0 8px 24px rgba(157,92,255,0.35); position:relative;
+}
+.stat-row{display:flex; gap:14px; justify-content:center; margin-top:40px; flex-wrap:wrap; position:relative;}
+.stat-card{
+  background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px 24px;
+  min-width:150px;
+}
+.stat-num{font-size:26px; font-weight:800; color:var(--gold);}
+.stat-label{font-size:12px; color:var(--grey2); margin-top:4px;}
+
+/* ---------- SECTIONS ---------- */
+section{padding:56px 20px;}
+.section-head{text-align:center; margin-bottom:36px;}
+.section-head .eyebrow{color:var(--gold); font-size:12px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;}
+.section-head h2{font-size:32px; margin:8px 0 10px; font-weight:800;}
+.section-head p{color:var(--grey); font-size:15px; max-width:520px; margin:0 auto;}
+
+.steps-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:20px;}
+.step-card{
+  background:var(--card); border:1px solid var(--border); border-radius:16px; padding:26px;
+  position:relative;
+}
+.step-num{
+  width:36px; height:36px; border-radius:50%; background:var(--violet); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-weight:800; margin-bottom:14px;
+}
+.step-card h3{font-size:17px; margin:0 0 8px;}
+.step-card p{font-size:13.5px; color:var(--grey); line-height:1.5; margin:0;}
+.step-arrow{position:absolute; top:26px; right:-26px; color:var(--violet); font-size:20px;}
+@media(max-width:760px){ .steps-grid{grid-template-columns:1fr;} .step-arrow{display:none;} }
+
+/* ---------- TOOL PANEL ---------- */
+#tool.container{padding-top:8px;}
+.panel{
+  background:var(--card); border:1px solid var(--border); border-radius:16px;
+  padding:24px; margin-bottom:20px;
+}
+.mode-toggle{display:flex; gap:10px; margin-bottom:16px;}
+.mode-btn{
+  flex:1; padding:10px; border-radius:10px; border:1px solid var(--border);
+  background:var(--card2); color:var(--grey); font-weight:600; cursor:pointer;
+  text-align:center; transition:.15s;
+}
+.mode-btn.active{background:var(--violet); color:#fff; border-color:var(--violet);}
+
+textarea{
+  width:100%; min-height:100px; background:var(--card2); border:1px solid var(--border);
+  border-radius:10px; color:#fff; padding:14px; font-size:15px; resize:vertical; font-family:inherit;
+}
+textarea:focus{outline:none; border-color:var(--violet);}
+
+#photoMode{display:none;}
+.upload-box{
+  border:2px dashed var(--border); border-radius:12px; padding:28px; text-align:center;
+  color:var(--grey2); cursor:pointer; background:var(--card2);
+}
+.upload-box img{max-width:100%; max-height:220px; border-radius:8px; margin-top:12px;}
+
+.row{display:flex; gap:12px; margin-top:16px; flex-wrap:wrap;}
+select{
+  flex:1; min-width:160px; background:var(--card2); border:1px solid var(--border);
+  color:#fff; padding:10px 12px; border-radius:10px; font-size:14px;
+}
+.vibe-row{display:flex; gap:8px; flex-wrap:wrap;}
+.vibe-btn{
+  padding:8px 16px; border-radius:20px; border:1px solid var(--border);
+  background:var(--card2); color:var(--grey); cursor:pointer; font-size:13px; font-weight:600;
+}
+.vibe-btn.active{background:var(--gold); color:#221a00; border-color:var(--gold);}
+
+.style-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:-4px;}
+.style-label{font-size:12px; color:var(--grey2); font-weight:700;}
+.style-btn{
+  padding:6px 14px; border-radius:18px; border:1px solid var(--border);
+  background:var(--card2); color:var(--grey); cursor:pointer; font-size:12.5px; font-weight:600;
+}
+.style-btn.active{background:var(--violet); color:#fff; border-color:var(--violet);}
+
+.go-btn{
+  width:100%; margin-top:18px; padding:15px; border:none; border-radius:12px;
+  background:linear-gradient(135deg, var(--violet), #6E2FD9); color:#fff;
+  font-size:16px; font-weight:700; cursor:pointer; letter-spacing:.3px;
+}
+.go-btn:disabled{opacity:.6; cursor:not-allowed;}
+
+#loading{display:none; text-align:center; color:var(--gold); padding:20px; font-weight:600;}
+#errorBox{display:none; background:#3A1424; border:1px solid var(--danger); color:#FF9CAE; padding:14px 16px; border-radius:10px; margin-bottom:16px; font-size:14px;}
+
+#resultPanel{display:none;}
+.result-pill{
+  display:inline-block; background:var(--violet-dim); color:var(--gold); border:1px solid var(--violet);
+  padding:6px 14px; border-radius:20px; font-size:13px; font-weight:700; margin-bottom:14px;
+}
+.explain-box{
+  background:var(--card2); border-left:3px solid var(--violet); padding:14px 16px;
+  border-radius:8px; margin-bottom:18px; line-height:1.5; font-size:15px;
+}
+.format-label{font-size:13px; font-weight:800; color:var(--gold); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;}
+#memeCard{background:#12081f; border-radius:10px; padding:4px;}
+.meme-actions{display:flex; gap:10px; margin-top:10px; margin-bottom:18px; flex-wrap:wrap;}
+.meme-actions .action-btn{flex:1; min-width:120px;}
+.hook-box{
+  background:linear-gradient(135deg, var(--violet-dim), #24123f); border:1px solid var(--gold);
+  border-radius:10px; padding:14px 16px; margin-top:18px; font-weight:600; color:var(--gold);
+}
+.result-actions{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
+.action-btn{
+  flex:1; min-width:120px; padding:10px; border-radius:8px; border:1px solid var(--border);
+  background:var(--card2); color:var(--grey); font-weight:600; cursor:pointer; font-size:13px;
+}
+.action-btn:hover{border-color:var(--violet); color:#fff;}
+
+/* --- meme shells --- */
+.meme-shell{background:var(--card2); border:1px solid var(--border); border-radius:12px; overflow:hidden;}
+.meme-header{background:var(--violet-dim); color:var(--gold); font-size:12px; font-weight:700; padding:8px 14px; letter-spacing:.4px;}
+.meme-body{padding:18px;}
+.drake-row{display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border);}
+.drake-row:last-child{border-bottom:none;}
+.drake-emoji{font-size:28px; width:44px; text-align:center;}
+.drake-text{flex:1; font-size:15px; font-weight:600;}
+.brain-level{padding:10px 0; border-bottom:1px solid var(--border); display:flex; gap:12px; align-items:center;}
+.brain-level:last-child{border-bottom:none;}
+.brain-icon{font-size:22px; width:34px;}
+.two-btn-row{display:flex; gap:14px; margin-bottom:14px;}
+.two-btn{flex:1; background:var(--card); border:1px solid var(--violet); border-radius:8px; padding:12px; text-align:center; font-weight:600; font-size:14px;}
+.sweat-label{text-align:center; color:var(--grey2); font-size:13px;}
+.db-row{display:flex; justify-content:space-between; gap:10px; font-size:13px; font-weight:600;}
+.db-item{flex:1; background:var(--card); border:1px solid var(--border); border-radius:8px; padding:10px; text-align:center;}
+.panel-row{display:flex; gap:10px;}
+.panel-cell{flex:1; background:var(--card); border:1px solid var(--border); border-radius:8px; padding:12px; font-size:13px; text-align:center;}
+
+.example-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:8px;}
+.example-label{font-size:12px; color:var(--grey2); font-weight:700;}
+.example-chip{
+  background:var(--card2); border:1px solid var(--border); color:var(--grey);
+  border-radius:20px; padding:5px 12px; font-size:12px; font-weight:600; cursor:pointer;
+}
+.example-chip:hover{border-color:var(--gold); color:#fff;}
+
+.meme-extra{margin-top:12px; font-size:13.5px; line-height:1.5; background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:10px 14px;}
+.meme-setup{border-left:3px solid var(--gold);}
+.meme-means{border-left:3px solid var(--violet);}
+.meme-takeaway{border-left:3px solid #4ADE80; font-weight:600;}
+
+#storyRender{display:none; margin-top:16px; background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:16px; font-size:14px; line-height:1.6;}
+
+/* --- comic panels --- */
+#comicWrap{margin-top:16px; display:flex; flex-direction:column; gap:12px;}
+.comic-panel-card{background:var(--card2); border:1px solid var(--border); border-radius:12px; overflow:hidden;}
+.comic-panel-card:nth-child(6n+1){border-color:#5a3d7a;}
+.comic-panel-card:nth-child(6n+2){border-color:#3d6a7a;}
+.comic-panel-card:nth-child(6n+3){border-color:#7a3d5a;}
+.comic-panel-card:nth-child(6n+4){border-color:#3d7a52;}
+.comic-panel-card:nth-child(6n+5){border-color:#7a653d;}
+.comic-panel-card:nth-child(6n+6){border-color:#3d5a7a;}
+.comic-panel-head{display:flex; align-items:center; gap:8px; background:var(--violet-dim); padding:8px 14px;}
+.comic-panel-badge{width:22px; height:22px; border-radius:50%; background:var(--gold); color:#1a0f2e; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.comic-panel-scene{font-size:12.5px; color:var(--grey); font-style:italic;}
+.comic-panel-body{padding:12px 14px;}
+.comic-panel-chars{font-size:11.5px; color:var(--gold); font-weight:700; margin-bottom:6px;}
+.comic-panel-dialogue{font-size:14.5px; font-weight:600; margin-bottom:6px;}
+.comic-panel-narration{font-size:12.5px; color:var(--grey2); font-style:italic; margin-bottom:6px;}
+.comic-panel-point{font-size:12px; background:#231338; border-radius:8px; padding:6px 10px; border-left:3px solid var(--violet);}
+
+/* --- structured story --- */
+#storyDetailWrap{margin-top:16px; display:flex; flex-direction:column; gap:10px;}
+.story-section-card{background:var(--card2); border:1px solid var(--border); border-left:3px solid var(--gold); border-radius:10px; padding:12px 14px;}
+.story-section-label{font-size:11px; font-weight:800; color:var(--gold); text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;}
+.story-section-text{font-size:14px; line-height:1.6;}
+.story-takeaway{border-left-color:#4ADE80;}
+
+/* --- infographic common mistake --- */
+.info-mistake{display:flex; gap:10px; align-items:stretch; flex-wrap:wrap;}
+.info-mistake-side{flex:1; min-width:140px; border-radius:10px; padding:10px 12px; font-size:12.5px; line-height:1.4;}
+.info-mistake-wrong{background:#3a1420; border:1px solid #7a3d5a;}
+.info-mistake-correct{background:#12301f; border:1px solid #3d7a52;}
+.info-mistake-label{font-weight:800; font-size:11px; letter-spacing:.4px; margin-bottom:4px; display:block;}
+
+/* --- infographic card --- */
+#infographicWrap{display:none; margin-top:16px;}
+#infoCard{
+  background:#12081f; border:2px solid var(--violet); border-radius:16px; padding:26px;
+  font-family:'Segoe UI', system-ui, sans-serif; color:#fff;
+}
+.info-mascot-row{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:10px;}
+.info-mascot{flex:1; display:flex; align-items:flex-start; gap:8px; max-width:48%;}
+.info-mascot.right{flex-direction:row-reverse; text-align:right;}
+.info-mascot-emoji{font-size:30px; line-height:1; flex-shrink:0;}
+.info-mascot-bubble{
+  background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:7px 10px;
+  font-size:11.5px; font-weight:700; color:var(--grey); line-height:1.3;
+}
+.info-title{
+  text-align:center; background:linear-gradient(135deg, var(--violet), #6E2FD9); color:#fff;
+  padding:12px; border-radius:10px; font-size:22px; font-weight:800; margin-bottom:16px;
+}
+.info-subject{text-align:center; color:var(--gold); font-size:12px; font-weight:700; letter-spacing:1px; margin:-10px 0 16px;}
+.info-cast-row{display:flex; justify-content:center; gap:18px; flex-wrap:wrap; padding:12px 0 4px;}
+.info-cast-item{display:flex; flex-direction:column; align-items:center; gap:4px;}
+.info-cast-emoji{
+  font-size:32px; width:52px; height:52px; display:flex; align-items:center; justify-content:center;
+  background:var(--card2); border:2px solid var(--gold); border-radius:50%;
+}
+.info-cast-label{font-size:10.5px; color:var(--grey2); font-weight:700; text-align:center; max-width:70px;}
+.info-cast-arrow{align-self:center; color:var(--gold); font-size:16px; margin-top:-16px;}
+.info-section{margin-bottom:16px;}
+.info-heading{font-size:13px; font-weight:800; color:var(--gold); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;}
+.info-features{background:#231338; border:1px solid var(--border); border-radius:10px; padding:14px 18px;}
+.info-features li{margin-bottom:5px; font-size:14px;}
+.info-diagram{display:flex; gap:6px; justify-content:center; flex-wrap:wrap; padding:10px 0;}
+.info-diagram-cell{
+  background:var(--card2); border:2px solid var(--violet); border-radius:8px; padding:10px 14px;
+  font-size:13px; font-weight:700; text-align:center; min-width:60px;
+}
+.info-arrow{align-self:center; color:var(--gold); font-size:18px; font-weight:700;}
+.info-caption{text-align:center; font-size:12px; color:var(--grey2); margin-top:6px;}
+.info-ops{background:#231338; border:1px solid var(--border); border-radius:10px; padding:6px 16px;}
+.info-op{padding:8px 0; border-bottom:1px solid var(--border); font-size:13px;}
+.info-op:last-child{border-bottom:none;}
+.info-op b{color:var(--gold);}
+.info-analogy{background:var(--card2); border-left:3px solid var(--gold); padding:12px 16px; border-radius:8px; font-size:13px; line-height:1.5; font-style:italic;}
+.info-proscons{display:flex; gap:12px;}
+.info-pros, .info-cons{flex:1; border-radius:10px; padding:12px 14px; font-size:13px;}
+.info-pros{background:#123321; border:1px solid #2E7D4F;}
+.info-cons{background:#361420; border:1px solid #8B2E44;}
+.info-proscons li{margin-bottom:4px;}
+.info-meme{
+  margin-top:6px; background:#1a1028; border:2px dashed var(--gold); border-radius:10px;
+  padding:14px; text-align:center;
+}
+.info-meme .cap-top, .info-meme .cap-bottom{font-weight:800; font-size:13px; margin:4px 0;}
+.info-meme .cap-top{color:#fff;}
+.info-meme .cap-bottom{color:var(--gold);}
+.info-emoji{font-size:34px; margin:4px 0;}
+
+.download-btn{
+  width:100%; margin-top:14px; padding:13px; border:none; border-radius:10px;
+  background:var(--gold); color:#221a00; font-weight:800; cursor:pointer; font-size:14px;
+}
+
+/* ---------- TREE STEP PANELS ---------- */
+.tree-steps-grid{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px; margin:8px 0 4px;
+}
+.tree-step-card{
+  border-radius:14px; padding:16px; border:1px solid var(--border);
+}
+.tree-step-badge{
+  display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px;
+  border-radius:50%; color:#fff; font-weight:800; font-size:13px; margin-right:8px;
+}
+.tree-step-title{display:inline-flex; align-items:center; font-weight:800; font-size:13.5px; margin-bottom:8px; color:#fff;}
+.tree-step-note{font-size:12px; color:var(--grey2); margin-bottom:10px; line-height:1.4;}
+.tree-step-card svg{display:block; margin:0 auto; max-width:100%; height:auto;}
+.tree-step-card:nth-child(6n+1){background:#2a1a3a; border-color:#5a3d7a;}
+.tree-step-card:nth-child(6n+2){background:#1a2e3a; border-color:#3d6a7a;}
+.tree-step-card:nth-child(6n+3){background:#3a1a2a; border-color:#7a3d5a;}
+.tree-step-card:nth-child(6n+4){background:#1a3a24; border-color:#3d7a52;}
+.tree-step-card:nth-child(6n+5){background:#3a2e1a; border-color:#7a653d;}
+.tree-step-card:nth-child(6n+6){background:#1a2a3a; border-color:#3d5a7a;}
+.tree-step-badge{background:var(--violet);}
+.tree-node-circle{stroke-width:2;}
+.tree-node-text{font-size:13px; font-weight:800; fill:#fff; text-anchor:middle; dominant-baseline:central;}
+.tree-node-tag{font-size:9px; font-weight:700; fill:var(--gold); text-anchor:middle;}
+.tree-link-line{stroke:#8B7FA3; stroke-width:1.6;}
+
+/* ---------- HISTORY ---------- */
+#history-empty{color:var(--grey2); font-size:14px; text-align:center; padding:30px 0;}
+.history-list{display:flex; flex-direction:column; gap:10px;}
+.history-item{
+  background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 16px;
+  display:flex; justify-content:space-between; align-items:center; cursor:pointer; gap:12px;
+}
+.history-item:hover{border-color:var(--violet);}
+.history-item .hi-main{flex:1; min-width:0;}
+.history-item .hi-concept{font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.history-item .hi-meta{font-size:12px; color:var(--grey2); margin-top:2px;}
+.hi-tag{font-size:11px; background:var(--violet-dim); color:var(--gold); padding:3px 9px; border-radius:12px; font-weight:700; white-space:nowrap;}
+.history-clear{
+  display:block; margin:18px auto 0; background:none; border:1px solid var(--border); color:var(--grey2);
+  padding:8px 18px; border-radius:20px; font-size:13px; cursor:pointer;
+}
+.history-clear:hover{color:var(--danger); border-color:var(--danger);}
+
+/* ---------- QUIZ ---------- */
+#quizWrap{margin-top:20px;}
+.quiz-cta{
+  background:var(--card2); border:1px dashed var(--violet); border-radius:12px; padding:16px;
+  text-align:center;
+}
+.quiz-cta p{margin:0 0 12px; font-size:13.5px; color:var(--grey);}
+.quiz-cta-btn{
+  background:var(--violet); color:#fff; border:none; padding:11px 22px; border-radius:20px;
+  font-weight:700; font-size:14px; cursor:pointer;
+}
+.quiz-level-row{display:flex; gap:10px; justify-content:center; margin-top:4px; flex-wrap:wrap;}
+.quiz-level-btn{
+  flex:1; min-width:100px; padding:12px; border-radius:10px; border:1px solid var(--border);
+  background:var(--card); color:var(--grey); font-weight:700; cursor:pointer; font-size:13.5px; text-align:center;
+}
+.quiz-level-btn[data-level="easy"]:hover{border-color:#2E7D4F; color:#fff;}
+.quiz-level-btn[data-level="medium"]:hover{border-color:var(--gold); color:#fff;}
+.quiz-level-btn[data-level="hard"]:hover{border-color:var(--danger); color:#fff;}
+.quiz-level-btn.active{background:var(--violet); border-color:var(--violet); color:#fff;}
+.quiz-level-sub{display:block; font-size:11px; color:var(--grey2); font-weight:500; margin-top:3px;}
+
+.quiz-setup-label{font-size:11.5px; color:var(--grey2); font-weight:700; text-transform:uppercase; letter-spacing:.5px; margin:14px 0 8px;}
+.quiz-count-row{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; align-items:center;}
+.quiz-count-btn{
+  padding:9px 16px; border-radius:18px; border:1px solid var(--border); background:var(--card);
+  color:var(--grey); font-weight:700; cursor:pointer; font-size:13.5px;
+}
+.quiz-count-btn.active{background:var(--gold); border-color:var(--gold); color:#221a00;}
+.quiz-count-custom{
+  width:90px; padding:9px 12px; border-radius:18px; border:1px solid var(--border); background:var(--card);
+  color:#fff; font-size:13.5px; text-align:center;
+}
+.quiz-count-custom:focus{outline:none; border-color:var(--gold);}
+.quiz-start-btn{
+  background:linear-gradient(135deg, var(--violet), #6E2FD9); color:#fff; border:none; padding:12px 24px;
+  border-radius:20px; font-weight:700; font-size:14px; cursor:pointer; margin-top:18px;
+}
+.quiz-loading{color:var(--grey2); font-size:13.5px; padding:10px 0;}
+
+.quiz-active{background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:18px;}
+.quiz-progress{font-size:12px; color:var(--grey2); font-weight:700; margin-bottom:10px; text-transform:uppercase; letter-spacing:.5px;}
+.quiz-q-text{font-weight:700; font-size:15px; margin-bottom:14px;}
+.quiz-opt{
+  display:block; width:100%; text-align:left; background:var(--card); border:1px solid var(--border);
+  color:var(--grey); padding:11px 14px; border-radius:8px; margin-bottom:8px; cursor:pointer; font-size:13.5px;
+}
+.quiz-opt:hover{border-color:var(--violet); color:#fff;}
+.quiz-opt.selected{background:var(--violet-dim); border-color:var(--violet); color:#fff;}
+.quiz-next-btn{
+  width:100%; margin-top:10px; padding:12px; border:none; border-radius:10px;
+  background:linear-gradient(135deg, var(--violet), #6E2FD9); color:#fff; font-weight:700;
+  cursor:pointer; font-size:14px;
+}
+.quiz-next-btn:disabled{opacity:.5; cursor:not-allowed;}
+
+.quiz-results{background:var(--card2); border:1px solid var(--violet); border-radius:12px; padding:20px;}
+.quiz-score-big{text-align:center; font-size:30px; font-weight:800; color:var(--gold); margin-bottom:4px;}
+.quiz-score-sub{text-align:center; font-size:13px; color:var(--grey2); margin-bottom:16px;}
+.quiz-review-item{padding:10px 0; border-bottom:1px solid var(--border); font-size:13px;}
+.quiz-review-item:last-child{border-bottom:none;}
+.quiz-review-q{font-weight:700; margin-bottom:4px;}
+.quiz-review-correct{color:#4ADE80;}
+.quiz-review-wrong{color:var(--danger);}
+.quiz-retry-btn{
+  width:100%; margin-top:14px; padding:11px; border-radius:10px; border:1px solid var(--border);
+  background:var(--card); color:var(--grey); font-weight:700; cursor:pointer; font-size:13.5px;
+}
+
+/* ---------- PROGRESS ---------- */
+.progress-row{display:flex; gap:14px; justify-content:center; flex-wrap:wrap;}
+.progress-card{
+  background:var(--card); border:1px solid var(--border); border-radius:14px; padding:20px 26px;
+  min-width:150px; text-align:center;
+}
+.progress-num{font-size:28px; font-weight:800; color:var(--gold);}
+.progress-label{font-size:12px; color:var(--grey2); margin-top:4px;}
+
+/* ---------- FOOTER ---------- */
+footer{border-top:1px solid var(--border); padding:32px 20px; text-align:center; color:var(--grey2); font-size:13px;}
+footer .team{color:var(--grey); font-weight:700; margin-bottom:4px;}
+
+@media(max-width:600px){
+  .hero h1{font-size:32px;}
+  .info-proscons{flex-direction:column;}
+  .db-row{flex-direction:column;}
+  .result-actions{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">Doubt<span>2</span>Meme</div>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#tool">Try it</a>
+      <a href="#progress">My Progress</a>
+      <a href="#history">History</a>
+    </div>
+    <a href="#tool" class="nav-cta">Try it now</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="logo-badge">HACKWELL 2.0 · HUMAN-CENTERED AI</div>
+  <h1>Doubt<span>2</span>Meme</h1>
+  <p class="hero-hook">Got a doubt? We speak meme.</p>
+  <p class="tagline">Type or photograph a confusing concept. Get a verified explanation and a meme that actually makes it click — plus comic, story, or infographic formats if you want to go deeper.</p>
+  <a href="#tool" class="hero-cta">😂 Translate My Doubt</a>
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-num">70%</div><div class="stat-label">forgotten within 24 hrs*</div></div>
+    <div class="stat-card"><div class="stat-num">2×</div><div class="stat-label">quiz-recall target</div></div>
+    <div class="stat-card"><div class="stat-num">40%</div><div class="stat-label">less time-to-understand</div></div>
+  </div>
+</div>
+
+<section id="how" class="container">
+  <div class="section-head">
+    <div class="eyebrow">How it works</div>
+    <h2>From confusion to recall in seconds</h2>
+    <p>No manual subject selection needed — Doubt2Meme automatically detects the field your doubt belongs to.</p>
+  </div>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <h3>✍️ Type or 📷 photograph your doubt</h3>
+      <p>Paste a confusing line from your textbook, or snap a photo of your handwritten notes. No setup, no subject picker.</p>
+      <div class="step-arrow">→</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <h3>🧠 AI detects the field & explains it</h3>
+      <p>The subject is auto-detected and a short, accurate, exam-safe explanation is generated first — accuracy before jokes.</p>
+      <div class="step-arrow">→</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <h3>🎨 Get a meme, story, comic or infographic</h3>
+      <p>Pick the format that sticks best for you, plus a one-line recall hook you can repeat right before an exam.</p>
+    </div>
+  </div>
+</section>
+
+<section id="tool" class="container">
+  <div class="section-head">
+    <div class="eyebrow">Try it live</div>
+    <h2>Translate your doubt</h2>
+  </div>
+
+  <div class="panel">
+    <div class="mode-toggle">
+      <div class="mode-btn active" id="typeBtn" onclick="setMode('type')">✍️ Type my doubt</div>
+      <div class="mode-btn" id="photoBtn" onclick="setMode('photo')">📷 Photo of doubt</div>
+    </div>
+
+    <div id="typeMode">
+      <textarea id="doubtText" placeholder="e.g. What is a doubly linked list? / Why does mitochondria produce ATP? / Explain supply and demand..."></textarea>
+      <div class="example-row">
+        <span class="example-label">Try:</span>
+        <button type="button" class="example-chip" onclick="useExample('What is a stack in data structures?')">Stack (DS)</button>
+        <button type="button" class="example-chip" onclick="useExample('Why does mitochondria produce ATP?')">Mitochondria (Bio)</button>
+        <button type="button" class="example-chip" onclick="useExample('Explain supply and demand in economics.')">Supply &amp; Demand (Eco)</button>
+      </div>
+    </div>
+
+    <div id="photoMode">
+      <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+        <div id="uploadPrompt">📤 Tap to upload a photo of your notes or textbook page</div>
+        <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFile(event)">
+        <img id="previewImg" style="display:none">
+      </div>
+    </div>
+
+    <div class="row">
+      <select id="subject">
+        <option value="">🔍 Auto-detect subject</option>
+        <option>Biology</option><option>Physics</option><option>Chemistry</option>
+        <option>Mathematics</option><option>Computer Science</option>
+        <option>Economics</option><option>History</option><option>Other</option>
+      </select>
+      <select id="language">
+        <option value="English">🌐 English</option>
+        <option value="Hindi">हिंदी Hindi</option>
+        <option value="Tamil">தமிழ் Tamil</option>
+        <option value="Telugu">తెలుగు Telugu</option>
+        <option value="Kannada">ಕನ್ನಡ Kannada</option>
+        <option value="Malayalam">മലയാളം Malayalam</option>
+      </select>
+    </div>
+
+    <div class="row vibe-row" id="vibeRow">
+      <div class="vibe-btn active" data-vibe="meme" onclick="setVibe('meme')">😂 Meme</div>
+      <div class="vibe-btn" data-vibe="story" onclick="setVibe('story')">📖 Story</div>
+      <div class="vibe-btn" data-vibe="comic" onclick="setVibe('comic')">🎬 Comic</div>
+      <div class="vibe-btn" data-vibe="infographic" onclick="setVibe('infographic')">🖼️ Pictorial Infographic</div>
+    </div>
+
+    <div class="row style-row" id="styleRow">
+      <span class="style-label">Meme style:</span>
+      <div class="style-btn active" data-style="relatable" onclick="setMemeStyle('relatable')">😂 Relatable</div>
+      <div class="style-btn" data-style="savage" onclick="setMemeStyle('savage')">🔥 Savage</div>
+      <div class="style-btn" data-style="movie" onclick="setMemeStyle('movie')">🎬 Movie</div>
+      <div class="style-btn" data-style="simple" onclick="setMemeStyle('simple')">🧒 Simple</div>
+    </div>
+
+    <button class="go-btn" id="goBtn" onclick="generate(false)">😂 Translate My Doubt</button>
+  </div>
+
+  <div id="loading">🧠 Thinking of the perfect way to explain this...</div>
+  <div id="errorBox"></div>
+
+  <div class="panel" id="resultPanel">
+    <div class="result-pill" id="resultPill"></div>
+
+    <div id="memeSection">
+      <div class="format-label" id="formatLabel">😂 Meme</div>
+      <div id="memeCard"><div id="memeRender"></div></div>
+      <div class="meme-actions" id="memeActions">
+        <button class="action-btn" onclick="downloadMeme()">⬇️ Download</button>
+        <button class="action-btn" onclick="shareMeme()">📤 Share</button>
+      </div>
+    </div>
+    <div id="comicWrap" style="display:none;"></div>
+    <div id="storyRender"><b>📖 The story version:</b><br><span id="storyText"></span></div>
+    <div id="storyDetailWrap" style="display:none;"></div>
+
+    <div id="infographicWrap">
+      <div id="infoCard"></div>
+      <button class="download-btn" onclick="downloadInfographic()">⬇️ Download as Image (PNG)</button>
+    </div>
+
+    <div class="explain-box" id="explainBox"></div>
+
+    <div class="hook-box" id="hookBox"></div>
+
+    <div id="quizWrap"></div>
+
+    <div class="result-actions">
+      <button class="action-btn" onclick="copyResult(event)">📋 Copy result</button>
+      <button class="action-btn" onclick="generate(true)">🔁 Try another translation</button>
+    </div>
+  </div>
+</section>
+
+<section id="progress" class="container">
+  <div class="section-head">
+    <div class="eyebrow">Your recall stats</div>
+    <h2>My Progress</h2>
+    <p>Tracked right in your browser — no account needed.</p>
+  </div>
+  <div class="progress-row">
+    <div class="progress-card"><div class="progress-num" id="statDoubts">0</div><div class="progress-label">doubts translated</div></div>
+    <div class="progress-card"><div class="progress-num" id="statQuizzes">0</div><div class="progress-label">quizzes taken</div></div>
+    <div class="progress-card"><div class="progress-num" id="statAccuracy">—</div><div class="progress-label">quiz accuracy</div></div>
+  </div>
+</section>
+
+<section id="history" class="container">
+  <div class="section-head">
+    <div class="eyebrow">Your past doubts</div>
+    <h2>History</h2>
+    <p>Saved on this device — click one to revisit it.</p>
+  </div>
+  <div id="historyList"></div>
+  <button class="history-clear" id="clearHistoryBtn" onclick="clearHistory()" style="display:none;">Clear history</button>
+</section>
+
+<footer>
+  <div class="team">Syntax to Sarcasm · Hackwell 2.0</div>
+  <div>Doubt2Meme — a Human-Centered AI / EdTech project</div>
+</footer>
+
+<script>
+const API_ENDPOINT = window.DOUBT2MEME_API || "/api/generate";
+const HISTORY_KEY = "doubt2meme_history";
+const STATS_KEY = "doubt2meme_stats";
+const HISTORY_LIMIT = 20;
+
+let currentMode = "type";
+let currentVibe = "meme";
+let currentMemeStyle = "relatable";
+let uploadedImageBase64 = null;
+let uploadedImageType = null;
+let lastResult = null;
+let lastDoubtLabel = "";
+
+function setMode(m){
+  currentMode = m;
+  document.getElementById('typeBtn').classList.toggle('active', m==='type');
+  document.getElementById('photoBtn').classList.toggle('active', m==='photo');
+  document.getElementById('typeMode').style.display = m==='type' ? 'block' : 'none';
+  document.getElementById('photoMode').style.display = m==='photo' ? 'block' : 'none';
+}
+
+function setVibe(v){
+  currentVibe = v;
+  document.querySelectorAll('.vibe-btn').forEach(b=>b.classList.toggle('active', b.dataset.vibe===v));
+  document.getElementById('styleRow').style.display = v==='meme' ? 'flex' : 'none';
+}
+
+function setMemeStyle(s){
+  currentMemeStyle = s;
+  document.querySelectorAll('.style-btn').forEach(b=>b.classList.toggle('active', b.dataset.style===s));
+}
+
+// Phone photos are often 3-10 MB, but Vercel rejects request bodies over 4.5 MB.
+// So we shrink the photo in the browser (max 1600px side, JPEG) before sending it —
+// still plenty sharp for Gemini to read handwriting, and uploads much faster.
+const MAX_IMAGE_SIDE = 1600;
+
+function shrinkImage(dataUrl){
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(img.width, img.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#fff'; // transparent PNGs -> white background, not black
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL('image/jpeg', 0.85));
+    };
+    img.onerror = () => resolve(null); // e.g. HEIC on a browser that can't decode it
+    img.src = dataUrl;
+  });
+}
+
+function handleFile(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async function(e){
+    const original = e.target.result;
+    const shrunk = await shrinkImage(original);
+    const finalUrl = shrunk || original;
+    uploadedImageType = shrunk ? "image/jpeg" : (file.type || "image/jpeg");
+    uploadedImageBase64 = finalUrl.split(',')[1];
+    if(uploadedImageBase64.length > 4000000){
+      uploadedImageBase64 = null;
+      showError("That photo is too large to upload — please crop it or take a smaller picture.");
+      return;
+    }
+    const img = document.getElementById('previewImg');
+    img.src = finalUrl;
+    img.style.display = 'block';
+    document.getElementById('uploadPrompt').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function useExample(text){
+  setMode('type');
+  document.getElementById('doubtText').value = text;
+  generate(false);
+}
+
+const loadingMsgs = [
+  "🧠 Thinking of the perfect way to explain this...",
+  "🎨 Picking the funniest format...",
+  "📚 Double-checking the facts...",
+  "✨ Almost ready..."
+];
+let loadingInterval;
+
+async function generate(retry){
+  const errorBox = document.getElementById('errorBox');
+  const loading = document.getElementById('loading');
+  const goBtn = document.getElementById('goBtn');
+  errorBox.style.display = 'none';
+  document.getElementById('resultPanel').style.display = 'none';
+
+  const requestBody = {
+    vibe: currentVibe,
+    style: currentMemeStyle,
+    subject: document.getElementById('subject').value,
+    language: document.getElementById('language').value,
+    retry: !!retry,
+    // backend expects "image" | "text" (the UI's internal names are "photo" | "type")
+    mode: currentMode === 'photo' ? 'image' : 'text'
+  };
+
+  if(currentMode === 'photo'){
+    if(!uploadedImageBase64){ showError("Please upload a photo first."); return; }
+    requestBody.image_base64 = uploadedImageBase64;
+    requestBody.image_media_type = uploadedImageType;
+    lastDoubtLabel = "📷 Photo doubt";
+  } else {
+    const text = document.getElementById('doubtText').value.trim();
+    if(!text){ showError("Please type your doubt first."); return; }
+    if(text.length > 600){ showError("That's a long doubt — please shorten it to under 600 characters so the explanation stays focused."); return; }
+    requestBody.text = text;
+    lastDoubtLabel = text;
+  }
+
+  goBtn.disabled = true;
+  loading.style.display = 'block';
+  let msgIdx = 0;
+  loading.textContent = loadingMsgs[0];
+  loadingInterval = setInterval(()=>{
+    msgIdx = (msgIdx+1) % loadingMsgs.length;
+    loading.textContent = loadingMsgs[msgIdx];
+  }, 1800);
+
+  try{
+    const resp = await fetch(API_ENDPOINT, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(requestBody)
+    });
+    const rawBody = await resp.text();
+    let data;
+    try { data = JSON.parse(rawBody); }
+    catch(e){ throw new Error("Server error (not JSON): " + rawBody.slice(0, 200)); }
+    if(!resp.ok){ throw new Error(data.error || 'Something went wrong.'); }
+    renderResult(data);
+    saveToHistory(data);
+    bumpStat('doubts');
+  }catch(err){
+    showError(err.message || "Could not generate. Please try again.");
+  }finally{
+    clearInterval(loadingInterval);
+    loading.style.display = 'none';
+    goBtn.disabled = false;
+  }
+}
+
+function showError(msg){
+  const errorBox = document.getElementById('errorBox');
+  errorBox.textContent = "⚠️ " + msg;
+  errorBox.style.display = 'block';
+}
+
+function renderResult(r){
+  lastResult = r;
+  document.getElementById('resultPanel').style.display = 'block';
+  document.getElementById('resultPill').textContent = "📌 " + (r.concept || "Concept") + " · " + (r.subject || "");
+  document.getElementById('explainBox').innerHTML = r.explanation
+    ? "<b>🧠 What it actually means:</b> " + escapeHtml(r.explanation)
+    : "";
+
+  const memeSection = document.getElementById('memeSection');
+  const memeRender = document.getElementById('memeRender');
+  const comicWrap = document.getElementById('comicWrap');
+  const storyRender = document.getElementById('storyRender');
+  const storyDetailWrap = document.getElementById('storyDetailWrap');
+  const infoWrap = document.getElementById('infographicWrap');
+  const hookBox = document.getElementById('hookBox');
+
+  // format_kind is the new, precise dispatch field; older saved-history items won't
+  // have it, so fall back to the legacy is_infographic flag for those.
+  const kind = r.format_kind || (r.is_infographic ? 'infographic' : 'meme');
+
+  memeRender.innerHTML = "";
+  memeSection.style.display = 'none';
+  comicWrap.innerHTML = "";
+  comicWrap.style.display = 'none';
+  storyRender.style.display = 'none';
+  storyDetailWrap.innerHTML = "";
+  storyDetailWrap.style.display = 'none';
+  infoWrap.style.display = 'none';
+
+  if(kind === 'infographic'){
+    infoWrap.style.display = 'block';
+    renderInfographic(r);
+  } else if(kind === 'comic' && Array.isArray(r.panels) && r.panels.length){
+    comicWrap.style.display = 'block';
+    comicWrap.innerHTML = renderComicPanels(r);
+  } else if(kind === 'story' && r.story_sections){
+    storyDetailWrap.style.display = 'block';
+    storyDetailWrap.innerHTML = renderStoryDetailed(r);
+  } else {
+    memeSection.style.display = 'block';
+    memeRender.innerHTML = renderMeme(r);
+    if(r.story){
+      storyRender.style.display = 'block';
+      document.getElementById('storyText').textContent = r.story;
+    }
+  }
+
+  hookBox.textContent = r.recall_hook ? "🧠 Recall hook: \"" + r.recall_hook + "\"" : "";
+  renderQuiz();
+  document.getElementById('resultPanel').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+let quizState = null; // { questions, level, index, answers: [{selected, correct}] }
+let quizSetupLevel = "easy";
+let quizSetupCount = 5;
+
+// Quiz is now generated on-demand (a separate API call) rather than baked into
+// every doubt response, so the student can pick how many questions they want.
+function renderQuiz(){
+  const wrap = document.getElementById('quizWrap');
+  wrap.innerHTML = `
+    <div class="quiz-cta">
+      <p>🧪 Want to check if it actually stuck? Take a quick practice quiz — totally optional.</p>
+      <button class="quiz-cta-btn" onclick="showQuizSetup()">Test Yourself</button>
+    </div>`;
+}
+
+function showQuizSetup(){
+  const wrap = document.getElementById('quizWrap');
+  quizSetupLevel = "easy";
+  quizSetupCount = 5;
+  wrap.innerHTML = `
+    <div class="quiz-cta">
+      <p>Choose a difficulty and how many questions to practice.</p>
+      <div class="quiz-level-row" id="quizLevelRow">
+        <button class="quiz-level-btn active" data-level="easy" onclick="selectQuizLevel('easy')">😌 Easy<span class="quiz-level-sub">basics</span></button>
+        <button class="quiz-level-btn" data-level="medium" onclick="selectQuizLevel('medium')">🤔 Medium<span class="quiz-level-sub">understanding</span></button>
+        <button class="quiz-level-btn" data-level="hard" onclick="selectQuizLevel('hard')">🔥 Hard<span class="quiz-level-sub">applied</span></button>
+      </div>
+      <div class="quiz-setup-label">How many questions?</div>
+      <div class="quiz-count-row" id="quizCountRow">
+        <button class="quiz-count-btn active" data-count="5" onclick="selectQuizCount(5)">5</button>
+        <button class="quiz-count-btn" data-count="10" onclick="selectQuizCount(10)">10</button>
+        <button class="quiz-count-btn" data-count="15" onclick="selectQuizCount(15)">15</button>
+        <button class="quiz-count-btn" data-count="20" onclick="selectQuizCount(20)">20</button>
+        <input type="number" id="quizCountCustom" class="quiz-count-custom" min="1" max="30" placeholder="Custom #" oninput="selectQuizCount(this.value, true)">
+      </div>
+      <button class="quiz-start-btn" onclick="startQuiz()">Start Quiz →</button>
+    </div>`;
+}
+
+function selectQuizLevel(level){
+  quizSetupLevel = level;
+  document.querySelectorAll('#quizLevelRow .quiz-level-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.level === level);
+  });
+}
+
+function selectQuizCount(count, isCustom){
+  const n = parseInt(count, 10);
+  if(!n || n < 1) return;
+  quizSetupCount = Math.min(30, n);
+  document.querySelectorAll('#quizCountRow .quiz-count-btn').forEach(b=>{
+    b.classList.toggle('active', !isCustom && parseInt(b.dataset.count,10) === n);
+  });
+  if(!isCustom){
+    const custom = document.getElementById('quizCountCustom');
+    if(custom) custom.value = '';
+  }
+}
+
+async function startQuiz(){
+  const wrap = document.getElementById('quizWrap');
+  wrap.innerHTML = `<div class="quiz-loading">🧠 Building your ${quizSetupCount}-question ${quizSetupLevel} quiz...</div>`;
+
+  const body = {
+    quiz_request: true,
+    concept: (lastResult && lastResult.concept) || '',
+    subject: (lastResult && lastResult.subject) || document.getElementById('subject').value || '',
+    doubt: lastDoubtLabel || '',
+    level: quizSetupLevel,
+    count: quizSetupCount,
+    language: document.getElementById('language').value
+  };
+
+  try{
+    const resp = await fetch(API_ENDPOINT, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    const rawBody = await resp.text();
+    let data;
+    try { data = JSON.parse(rawBody); }
+    catch(e){ throw new Error("Server error (not JSON): " + rawBody.slice(0, 200)); }
+    if(!resp.ok){ throw new Error(data.error || 'Could not build the quiz.'); }
+
+    const questions = data.questions || [];
+    if(!questions.length){ throw new Error("No questions came back — try again."); }
+
+    quizState = { questions, level: data.level || quizSetupLevel, index: 0, answers: [] };
+    renderQuizQuestion();
+  }catch(err){
+    wrap.innerHTML = `
+      <div class="quiz-cta">
+        <p>⚠️ ${escapeHtml(err.message || "Couldn't build the quiz.")}</p>
+        <button class="quiz-cta-btn" onclick="showQuizSetup()">Try again</button>
+      </div>`;
+  }
+}
+
+function renderQuizQuestion(){
+  const wrap = document.getElementById('quizWrap');
+  const { questions, level, index } = quizState;
+  const q = questions[index];
+  const e = escapeHtml;
+
+  wrap.innerHTML = `
+    <div class="quiz-active">
+      <div class="quiz-progress">${level.toUpperCase()} · Question ${index+1} of ${questions.length}</div>
+      <div class="quiz-q-text">${e(q.question||'')}</div>
+      <div id="quizOptions">
+        ${(q.options||[]).map((opt,oi) => `<button class="quiz-opt" data-opt="${oi}" onclick="selectQuizOption(${oi})">${e(opt)}</button>`).join('')}
+      </div>
+      <button class="quiz-next-btn" id="quizNextBtn" disabled onclick="nextQuizQuestion()">
+        ${index === questions.length - 1 ? 'See My Score' : 'Next Question →'}
+      </button>
+    </div>`;
+}
+
+function selectQuizOption(optIndex){
+  document.querySelectorAll('#quizOptions .quiz-opt').forEach(btn=>{
+    btn.classList.toggle('selected', parseInt(btn.dataset.opt,10) === optIndex);
+  });
+  quizState.selectedOption = optIndex;
+  document.getElementById('quizNextBtn').disabled = false;
+}
+
+function nextQuizQuestion(){
+  const { questions, index, selectedOption } = quizState;
+  const q = questions[index];
+  quizState.answers.push({
+    question: q.question,
+    options: q.options,
+    selected: selectedOption,
+    correctIndex: Number(q.correct_index),
+    why: q.why || "",
+    isCorrect: selectedOption === Number(q.correct_index)
+  });
+  quizState.selectedOption = undefined;
+
+  if(index + 1 < questions.length){
+    quizState.index++;
+    renderQuizQuestion();
+  } else {
+    renderQuizResults();
+  }
+}
+
+function renderQuizResults(){
+  const wrap = document.getElementById('quizWrap');
+  const { answers, level } = quizState;
+  const correctCount = answers.filter(a=>a.isCorrect).length;
+  const total = answers.length;
+  const e = escapeHtml;
+
+  wrap.innerHTML = `
+    <div class="quiz-results">
+      <div class="quiz-score-big">${correctCount} / ${total}</div>
+      <div class="quiz-score-sub">${level.toUpperCase()} level — ${correctCount===total ? 'Perfect score! 🎉' : correctCount >= total/2 ? 'Solid recall.' : 'Worth another look at the explanation above.'}</div>
+      ${answers.map((a,i) => `
+        <div class="quiz-review-item">
+          <div class="quiz-review-q">${i+1}. ${e(a.question)}</div>
+          <div class="${a.isCorrect ? 'quiz-review-correct' : 'quiz-review-wrong'}">
+            ${a.isCorrect ? '✅' : '❌'} Your answer: ${e(a.options[a.selected] ?? '—')}
+          </div>
+          ${!a.isCorrect ? `<div class="quiz-review-correct">✔️ Correct: ${e(a.options[a.correctIndex])}</div>` : ''}
+          ${a.why ? `<div style="color:var(--grey2); margin-top:2px;">${e(a.why)}</div>` : ''}
+        </div>
+      `).join('')}
+      <button class="quiz-retry-btn" onclick="showQuizSetup()">← Try another quiz</button>
+    </div>`;
+
+  bumpStat('quiz', correctCount, total);
+}
+
+function renderMeme(r){
+  const m = r.meme || {};
+  const fmt = r.meme_format;
+  const e = escapeHtml;
+
+  const setupHtml = r.setup ? `<div class="meme-extra meme-setup">🙋 ${e(r.setup)}</div>` : '';
+  const meansHtml = r.meme_means ? `<div class="meme-extra meme-means"><b>😂 What the meme means:</b> ${e(r.meme_means)}</div>` : '';
+  const takeawayHtml = r.takeaway ? `<div class="meme-extra meme-takeaway">🎯 <b>Takeaway:</b> ${e(r.takeaway)}</div>` : '';
+
+  return setupHtml + renderMemeShell(fmt, m, e) + meansHtml + takeawayHtml;
+}
+
+function renderMemeShell(fmt, m, e){
+  if(fmt === 'drake'){
+    return `<div class="meme-shell"><div class="meme-header">Format: Drake Hotline Bling</div>
+      <div class="meme-body">
+        <div class="drake-row"><div class="drake-emoji">🙅</div><div class="drake-text">${e(m.reject||'')}</div></div>
+        <div class="drake-row"><div class="drake-emoji">😎</div><div class="drake-text">${e(m.accept||'')}</div></div>
+      </div></div>`;
+  }
+  if(fmt === 'expanding_brain'){
+    return `<div class="meme-shell"><div class="meme-header">Format: Expanding Brain</div>
+      <div class="meme-body">
+        <div class="brain-level"><div class="brain-icon">🧠</div><div>${e(m.level1||'')}</div></div>
+        <div class="brain-level"><div class="brain-icon">✨🧠</div><div>${e(m.level2||'')}</div></div>
+        <div class="brain-level"><div class="brain-icon">🌌🧠</div><div>${e(m.level3||'')}</div></div>
+        <div class="brain-level"><div class="brain-icon">💥🧠💥</div><div>${e(m.level4||'')}</div></div>
+      </div></div>`;
+  }
+  if(fmt === 'distracted_boyfriend'){
+    return `<div class="meme-shell"><div class="meme-header">Format: Distracted Boyfriend</div>
+      <div class="meme-body">
+        <div class="db-row">
+          <div class="db-item">🧍 ${e(m.boyfriend_label||'Student')}</div>
+          <div class="db-item">😍 ${e(m.other_girl_label||'')}</div>
+          <div class="db-item">🙄 ${e(m.girlfriend_label||'')}</div>
+        </div>
+      </div></div>`;
+  }
+  if(fmt === 'two_buttons'){
+    return `<div class="meme-shell"><div class="meme-header">Format: Two Buttons</div>
+      <div class="meme-body">
+        <div class="two-btn-row">
+          <div class="two-btn">${e(m.button1||'')}</div>
+          <div class="two-btn">${e(m.button2||'')}</div>
+        </div>
+        <div class="sweat-label">😅 ${e(m.sweating_label||'')}</div>
+      </div></div>`;
+  }
+  if(fmt === 'panel_comic'){
+    return `<div class="meme-shell"><div class="meme-header">Format: 3-Panel Comic</div>
+      <div class="meme-body">
+        <div class="panel-row">
+          <div class="panel-cell">1️⃣ ${e(m.panel1||'')}</div>
+          <div class="panel-cell">2️⃣ ${e(m.panel2||'')}</div>
+          <div class="panel-cell">3️⃣ ${e(m.panel3||'')}</div>
+        </div>
+      </div></div>`;
+  }
+  return `<div class="meme-shell"><div class="meme-body">${e(JSON.stringify(m))}</div></div>`;
+}
+
+function renderComicPanels(r){
+  const e = escapeHtml;
+  const panels = r.panels || [];
+  const cards = panels.map((p, i) => {
+    const chars = Array.isArray(p.characters) ? p.characters.join(', ') : (p.characters || '');
+    return `
+    <div class="comic-panel-card">
+      <div class="comic-panel-head">
+        <div class="comic-panel-badge">${p.panel_number || (i+1)}</div>
+        <div class="comic-panel-scene">${e(p.scene||'')}</div>
+      </div>
+      <div class="comic-panel-body">
+        ${chars ? `<div class="comic-panel-chars">🎭 ${e(chars)}</div>` : ''}
+        ${p.dialogue ? `<div class="comic-panel-dialogue">"${e(p.dialogue)}"</div>` : ''}
+        ${p.narration ? `<div class="comic-panel-narration">${e(p.narration)}</div>` : ''}
+        ${p.concept_point ? `<div class="comic-panel-point">💡 ${e(p.concept_point)}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+  const takeaway = r.takeaway ? `<div class="meme-extra meme-takeaway">🎯 <b>Takeaway:</b> ${e(r.takeaway)}</div>` : '';
+  return cards + takeaway;
+}
+
+function renderStoryDetailed(r){
+  const e = escapeHtml;
+  const s = r.story_sections || {};
+  const sections = [
+    ['🙋 Beginning', s.beginning],
+    ['❓ The Problem', s.problem],
+    ['🔎 Concept Introduction', s.concept_intro],
+    ['📘 Explanation', s.explanation],
+    ['🌍 Real-Life Example', s.example],
+    ['✅ Resolution', s.resolution],
+  ];
+  const cards = sections
+    .filter(([, text]) => text)
+    .map(([label, text]) => `
+      <div class="story-section-card">
+        <div class="story-section-label">${e(label)}</div>
+        <div class="story-section-text">${e(text)}</div>
+      </div>`)
+    .join('');
+  const takeaway = s.takeaway ? `
+    <div class="story-section-card story-takeaway">
+      <div class="story-section-label">🎯 Takeaway</div>
+      <div class="story-section-text">${e(s.takeaway)}</div>
+    </div>` : '';
+  return cards + takeaway;
+}
+
+/* ---------- Binary tree diagram rendering (SVG) ---------- */
+function layoutTree(node, depth, counter, spacingX, spacingY){
+  if(!node) return null;
+  const left = layoutTree(node.left, depth+1, counter, spacingX, spacingY);
+  const x = counter.val * spacingX + spacingX/2;
+  counter.val++;
+  const right = layoutTree(node.right, depth+1, counter, spacingX, spacingY);
+  return {
+    value: node.value, tag: node.tag, highlight: node.highlight,
+    x, y: depth*spacingY + spacingY/2,
+    left, right
+  };
+}
+
+const HIGHLIGHT_COLORS = {
+  red: '#FF5470', gold: '#FFC857', violet: '#9D5CFF', green: '#4ADE80'
+};
+
+function collectNodes(node, list){
+  if(!node) return;
+  list.push(node);
+  collectNodes(node.left, list);
+  collectNodes(node.right, list);
+}
+
+function collectLinks(node, list){
+  if(!node) return;
+  if(node.left){ list.push([node, node.left]); collectLinks(node.left, list); }
+  if(node.right){ list.push([node, node.right]); collectLinks(node.right, list); }
+}
+
+function renderTreeSVG(rootRaw){
+  if(!rootRaw) return '<div style="color:var(--grey2); font-size:12px; text-align:center;">(empty)</div>';
+  const spacingX = 64, spacingY = 62;
+  const counter = { val: 0 };
+  const root = layoutTree(rootRaw, 0, counter, spacingX, spacingY);
+  const nodes = []; collectNodes(root, nodes);
+  const links = []; collectLinks(root, links);
+
+  const width = Math.max(counter.val * spacingX, spacingX);
+  const maxDepth = nodes.reduce((m,n)=>Math.max(m, n.y), 0);
+  const height = maxDepth + spacingY/2 + 10;
+  const e = escapeHtml;
+
+  const linksSVG = links.map(([a,b]) =>
+    `<line class="tree-link-line" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"/>`
+  ).join('');
+
+  const nodesSVG = nodes.map(n => {
+    const color = HIGHLIGHT_COLORS[n.highlight] || '#9D5CFF';
+    return `
+      <g>
+        <circle class="tree-node-circle" cx="${n.x}" cy="${n.y}" r="18" fill="#171025" stroke="${color}"/>
+        <text class="tree-node-text" x="${n.x}" y="${n.y}">${e(String(n.value ?? ''))}</text>
+        ${n.tag ? `<text class="tree-node-tag" x="${n.x}" y="${n.y - 24}">${e(String(n.tag))}</text>` : ''}
+      </g>`;
+  }).join('');
+
+  return `<svg viewBox="0 0 ${width} ${height}" width="100%" style="max-width:${Math.min(width,340)}px">
+    ${linksSVG}${nodesSVG}
+  </svg>`;
+}
+
+function renderTreeSteps(steps){
+  if(!steps || !steps.length) return '';
+  const e = escapeHtml;
+  const cards = steps.map((step, i) => `
+    <div class="tree-step-card">
+      <div class="tree-step-title"><span class="tree-step-badge">${i+1}</span>${e(step.label||'')}</div>
+      ${step.note ? `<div class="tree-step-note">${e(step.note)}</div>` : ''}
+      ${renderTreeSVG(step.tree)}
+    </div>
+  `).join('');
+  return `<div class="tree-steps-grid">${cards}</div>`;
+}
+
+function renderInfographic(r){
+  const e = escapeHtml;
+  const card = document.getElementById('infoCard');
+
+  const features = (r.key_features||[]).map(f=>`<li>${e(f)}</li>`).join('');
+  const isTree = !!r.is_tree_concept && r.tree_steps && r.tree_steps.length;
+
+  const structParts = (r.structure && r.structure.parts) || [];
+  const structDiagram = structParts.map((p,i)=>
+    (i>0 ? '<div class="info-arrow">↔</div>' : '') +
+    `<div class="info-diagram-cell">${e(p)}</div>`
+  ).join('');
+
+  const exItems = (r.example && r.example.items) || [];
+  const exDiagram = ['<div class="info-diagram-cell">NULL</div>']
+    .concat(exItems.map(v=>`<div class="info-diagram-cell">${e(v)}</div>`))
+    .concat(['<div class="info-diagram-cell">NULL</div>'])
+    .map((cell,i,arr)=> i>0 ? '<div class="info-arrow">⇄</div>'+cell : cell)
+    .join('');
+
+  const treeStepsHtml = isTree ? renderTreeSteps(r.tree_steps) : '';
+
+  const ops = (r.operations||[]).map(o=>
+    `<div class="info-op"><b>${e(o.name||'')}:</b> ${e(o.detail||'')}</div>`
+  ).join('');
+
+  const pros = (r.pros||[]).map(p=>`<li>${e(p)}</li>`).join('');
+  const cons = (r.cons||[]).map(c=>`<li>${e(c)}</li>`).join('');
+
+  const mascot = r.mascot || {};
+  const mascotHtml = (mascot.emoji_left || mascot.emoji_right) ? `
+    <div class="info-mascot-row">
+      <div class="info-mascot">
+        <div class="info-mascot-emoji">${e(mascot.emoji_left||'🙂')}</div>
+        <div class="info-mascot-bubble">${e(mascot.caption_left||'')}</div>
+      </div>
+      <div class="info-mascot right">
+        <div class="info-mascot-emoji">${e(mascot.emoji_right||'🙂')}</div>
+        <div class="info-mascot-bubble">${e(mascot.caption_right||'')}</div>
+      </div>
+    </div>` : '';
+
+  const castMembers = r.analogy_characters || [];
+  const castHtml = castMembers.length ? `
+    <div class="info-cast-row">
+      ${castMembers.map((c,i) => `
+        ${i>0 ? '<div class="info-cast-arrow">→</div>' : ''}
+        <div class="info-cast-item">
+          <div class="info-cast-emoji">${e(c.emoji||'🙂')}</div>
+          <div class="info-cast-label">${e(c.label||'')}</div>
+        </div>
+      `).join('')}
+    </div>` : '';
+
+  const memeEmoji = r.meme_emoji || '😹';
+
+  const mistake = r.common_mistake || {};
+  const mistakeHtml = (mistake.wrong || mistake.correct) ? `
+    <div class="info-section">
+      <div class="info-heading">🚧 Common Mistake</div>
+      <div class="info-mistake">
+        <div class="info-mistake-side info-mistake-wrong">
+          <span class="info-mistake-label">${e(mistake.wrong_emoji||'❌')} MISCONCEPTION</span>
+          ${e(mistake.wrong||'')}
+        </div>
+        <div class="info-mistake-side info-mistake-correct">
+          <span class="info-mistake-label">${e(mistake.correct_emoji||'✅')} ACTUALLY</span>
+          ${e(mistake.correct||'')}
+        </div>
+      </div>
+    </div>` : '';
+
+  card.innerHTML = `
+    ${mascotHtml}
+    <div class="info-title">${e(r.concept||'Concept')}</div>
+    <div class="info-subject">${e((r.subject||'').toUpperCase())}</div>
+
+    <div class="info-section">
+      <div class="info-heading">🔑 Key Features</div>
+      <div class="info-features"><ul style="margin:0; padding-left:18px;">${features}</ul></div>
+    </div>
+
+    ${isTree ? `
+    <div class="info-section">
+      <div class="info-heading">🌳 Step by Step</div>
+      ${treeStepsHtml}
+    </div>` : `
+    ${structParts.length ? `
+    <div class="info-section">
+      <div class="info-heading">🧩 ${e((r.structure&&r.structure.caption)||'Structure')}</div>
+      <div class="info-diagram">${structDiagram}</div>
+    </div>` : ''}
+
+    ${exItems.length ? `
+    <div class="info-section">
+      <div class="info-heading">🔗 ${e((r.example&&r.example.caption)||'Example')}</div>
+      <div class="info-diagram">${exDiagram}</div>
+    </div>` : ''}
+    `}
+
+    ${ops ? `
+    <div class="info-section">
+      <div class="info-heading">⚙️ Operations</div>
+      <div class="info-ops">${ops}</div>
+    </div>` : ''}
+
+    ${r.analogy ? `
+    <div class="info-section">
+      <div class="info-heading">💡 Real-Life Analogy</div>
+      ${castHtml}
+      <div class="info-analogy">${e(r.analogy)}</div>
+    </div>` : ''}
+
+    ${mistakeHtml}
+
+    <div class="info-section">
+      <div class="info-heading">⚖️ Pros &amp; Cons</div>
+      <div class="info-proscons">
+        <div class="info-pros"><b>✅ Advantages</b><ul style="padding-left:16px; margin:6px 0 0;">${pros}</ul></div>
+        <div class="info-cons"><b>⚠️ Disadvantages</b><ul style="padding-left:16px; margin:6px 0 0;">${cons}</ul></div>
+      </div>
+    </div>
+
+    ${(r.meme_caption_top || r.meme_caption_bottom) ? `
+    <div class="info-meme">
+      <div class="info-emoji">${e(memeEmoji)}</div>
+      <div class="cap-top">${e(r.meme_caption_top||'')}</div>
+      <div class="cap-bottom">${e(r.meme_caption_bottom||'')}</div>
+    </div>` : ''}
+  `;
+}
+
+function downloadInfographic(){
+  const card = document.getElementById('infoCard');
+  if(!window.html2canvas){ showError("Image export library didn't load — check your connection."); return; }
+  html2canvas(card, {backgroundColor:'#12081f', scale:2}).then(canvas=>{
+    const link = document.createElement('a');
+    link.download = 'doubt2meme-infographic.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }).catch(()=> showError("Couldn't export image. Try again."));
+}
+
+function memeCanvas(){
+  const card = document.getElementById('memeCard');
+  if(!window.html2canvas){ showError("Image export library didn't load — check your connection."); return Promise.reject(); }
+  return html2canvas(card, {backgroundColor:'#12081f', scale:2});
+}
+
+function downloadMeme(){
+  memeCanvas().then(canvas=>{
+    const link = document.createElement('a');
+    link.download = 'doubt2meme.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }).catch(()=> showError("Couldn't export image. Try again."));
+}
+
+function shareMeme(){
+  memeCanvas().then(canvas=>{
+    canvas.toBlob(blob=>{
+      if(!blob){ showError("Couldn't prepare image to share."); return; }
+      const file = new File([blob], 'doubt2meme.png', {type:'image/png'});
+      if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+        navigator.share({
+          files:[file],
+          title: 'Doubt2Meme',
+          text: lastResult && lastResult.recall_hook ? lastResult.recall_hook : "I turned my doubt into a meme with Doubt2Meme 😂"
+        }).catch(()=>{ /* user cancelled share — not an error */ });
+      } else {
+        // fallback for browsers without native share: just download it
+        const link = document.createElement('a');
+        link.download = 'doubt2meme.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }
+    }, 'image/png');
+  }).catch(()=> showError("Couldn't export image. Try again."));
+}
+
+function copyResult(ev){
+  if(!lastResult) return;
+  const btn = (ev && ev.currentTarget) || (ev && ev.target) || document.activeElement;
+  const r = lastResult;
+  let text = `${r.concept || ''} (${r.subject || ''})\n\n${r.explanation || ''}\n\n`;
+  if(r.recall_hook) text += `Recall hook: "${r.recall_hook}"\n`;
+  navigator.clipboard.writeText(text).then(()=>{
+    if(!btn) return;
+    const old = btn.textContent;
+    btn.textContent = "✅ Copied!";
+    setTimeout(()=>{ btn.textContent = old; }, 1500);
+  }).catch(()=> showError("Couldn't copy — your browser may have blocked clipboard access."));
+}
+
+/* ---------- HISTORY (localStorage) ---------- */
+function loadHistory(){
+  try{
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+  }catch(e){ return []; }
+}
+
+function saveToHistory(result){
+  try{
+    let hist = loadHistory();
+    hist.unshift({
+      concept: result.concept || lastDoubtLabel.slice(0,40) || "Doubt",
+      subject: result.subject || "",
+      vibe: currentVibe,
+      timestamp: Date.now(),
+      result: result
+    });
+    hist = hist.slice(0, HISTORY_LIMIT);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+    renderHistory();
+  }catch(e){ /* localStorage may be unavailable — history is a nice-to-have */ }
+}
+
+function renderHistory(){
+  const hist = loadHistory();
+  const listEl = document.getElementById('historyList');
+  const clearBtn = document.getElementById('clearHistoryBtn');
+  if(!hist.length){
+    listEl.innerHTML = '<div id="history-empty">No saved doubts yet — translate one above and it\'ll show up here.</div>';
+    clearBtn.style.display = 'none';
+    return;
+  }
+  clearBtn.style.display = 'block';
+  listEl.innerHTML = '<div class="history-list">' + hist.map((h,i)=>{
+    const date = new Date(h.timestamp);
+    const timeStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    return `<div class="history-item" onclick="reopenHistory(${i})">
+      <div class="hi-main">
+        <div class="hi-concept">${escapeHtml(h.concept)}</div>
+        <div class="hi-meta">${escapeHtml(h.subject)} · ${timeStr}</div>
+      </div>
+      <div class="hi-tag">${escapeHtml(h.vibe)}</div>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+function reopenHistory(index){
+  const hist = loadHistory();
+  const item = hist[index];
+  if(!item) return;
+  renderResult(item.result);
+}
+
+function clearHistory(){
+  localStorage.removeItem(HISTORY_KEY);
+  renderHistory();
+}
+
+function escapeHtml(str){
+  if(str === null || str === undefined || str === '') return '';
+  str = String(str);
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* ---------- PROGRESS STATS (localStorage) ---------- */
+function loadStats(){
+  try{
+    return JSON.parse(localStorage.getItem(STATS_KEY) || '{"doubts":0,"quizzesTaken":0,"quizCorrect":0,"quizTotal":0}');
+  }catch(e){ return {doubts:0, quizzesTaken:0, quizCorrect:0, quizTotal:0}; }
+}
+
+function bumpStat(kind, correct, total){
+  try{
+    const stats = loadStats();
+    if(kind === 'doubts'){
+      stats.doubts = (stats.doubts||0) + 1;
+    } else if(kind === 'quiz'){
+      stats.quizzesTaken = (stats.quizzesTaken||0) + 1;
+      stats.quizCorrect = (stats.quizCorrect||0) + correct;
+      stats.quizTotal = (stats.quizTotal||0) + total;
+    }
+    localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+    renderStats();
+  }catch(e){ /* stats are a nice-to-have */ }
+}
+
+function renderStats(){
+  const stats = loadStats();
+  document.getElementById('statDoubts').textContent = stats.doubts || 0;
+  document.getElementById('statQuizzes').textContent = stats.quizzesTaken || 0;
+  const acc = stats.quizTotal ? Math.round((stats.quizCorrect / stats.quizTotal) * 100) + '%' : '—';
+  document.getElementById('statAccuracy').textContent = acc;
+}
+
+renderHistory();
+renderStats();
+</script>
+</body>
+</html>
