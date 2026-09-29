@@ -142,6 +142,33 @@ select{
 }
 .style-btn.active{background:var(--violet); color:#fff; border-color:var(--violet);}
 
+/* ---- "Explain it like I'm a..." profession section ---- */
+.persona-box{
+  margin-top:16px; padding:14px; border:1px solid var(--border); border-radius:12px;
+  background:var(--card2);
+}
+.persona-head{font-size:13.5px; font-weight:800; color:var(--gold); margin-bottom:4px;}
+.persona-head span{color:var(--grey2); font-weight:600; font-size:12px;}
+.persona-sub{font-size:12px; color:var(--grey2); margin-bottom:10px;}
+.persona-row{display:flex; gap:8px; flex-wrap:wrap;}
+.persona-btn{
+  padding:6px 12px; border-radius:18px; border:1px solid var(--border);
+  background:var(--card); color:var(--grey); cursor:pointer; font-size:12.5px; font-weight:600;
+  font-family:inherit;
+}
+.persona-btn:hover{border-color:var(--violet);}
+.persona-btn.active{background:var(--gold); color:#221a00; border-color:var(--gold);}
+.persona-custom{
+  display:none; width:100%; margin-top:10px; background:var(--card); border:1px solid var(--violet);
+  color:#fff; padding:10px 12px; border-radius:10px; font-size:14px; font-family:inherit;
+}
+.persona-link-box{
+  background:linear-gradient(135deg, rgba(255,200,87,.12), rgba(157,92,255,.12));
+  border:1px solid var(--gold); border-radius:10px; padding:12px 14px; margin-bottom:18px;
+  font-size:14.5px; line-height:1.5;
+}
+.persona-link-box b{color:var(--gold);}
+
 .go-btn{
   width:100%; margin-top:18px; padding:15px; border:none; border-radius:12px;
   background:linear-gradient(135deg, var(--violet), #6E2FD9); color:#fff;
@@ -555,6 +582,29 @@ footer .team{color:var(--grey); font-weight:700; margin-bottom:4px;}
       <div class="style-btn" data-style="simple" onclick="setMemeStyle('simple')">🧒 Simple</div>
     </div>
 
+    <!-- Custom "explain it for my profession" section -->
+    <div class="persona-box">
+      <div class="persona-head">🎭 Explain it like I'm a… <span>(optional)</span></div>
+      <div class="persona-sub">Pick a profession and every analogy, example and joke comes from that world. The facts stay the same.</div>
+      <div class="persona-row" id="personaRow">
+        <button type="button" class="persona-btn active" data-persona="" onclick="setPersona('')">🎓 Student (default)</button>
+        <button type="button" class="persona-btn" data-persona="Doctor" onclick="setPersona('Doctor')">🩺 Doctor</button>
+        <button type="button" class="persona-btn" data-persona="Dancer" onclick="setPersona('Dancer')">💃 Dancer</button>
+        <button type="button" class="persona-btn" data-persona="Cricketer" onclick="setPersona('Cricketer')">🏏 Cricketer</button>
+        <button type="button" class="persona-btn" data-persona="Chef" onclick="setPersona('Chef')">👨‍🍳 Chef</button>
+        <button type="button" class="persona-btn" data-persona="Musician" onclick="setPersona('Musician')">🎵 Musician</button>
+        <button type="button" class="persona-btn" data-persona="Farmer" onclick="setPersona('Farmer')">🌾 Farmer</button>
+        <button type="button" class="persona-btn" data-persona="Teacher" onclick="setPersona('Teacher')">🧑‍🏫 Teacher</button>
+        <button type="button" class="persona-btn" data-persona="Lawyer" onclick="setPersona('Lawyer')">⚖️ Lawyer</button>
+        <button type="button" class="persona-btn" data-persona="Gamer" onclick="setPersona('Gamer')">🎮 Gamer</button>
+        <button type="button" class="persona-btn" data-persona="Artist" onclick="setPersona('Artist')">🎨 Artist</button>
+        <button type="button" class="persona-btn" data-persona="Police Officer" onclick="setPersona('Police Officer')">👮 Police Officer</button>
+        <button type="button" class="persona-btn" data-persona="__custom" onclick="setPersona('__custom')">✏️ Custom…</button>
+      </div>
+      <input type="text" id="personaCustom" class="persona-custom" maxlength="40"
+        placeholder="Type any profession, e.g. pilot, YouTuber, auto driver, nurse">
+    </div>
+
     <button class="go-btn" id="goBtn" onclick="generate(false)">😂 Translate My Doubt</button>
   </div>
 
@@ -563,6 +613,7 @@ footer .team{color:var(--grey); font-weight:700; margin-bottom:4px;}
 
   <div class="panel" id="resultPanel">
     <div class="result-pill" id="resultPill"></div>
+    <div class="persona-link-box" id="personaLinkBox" style="display:none"></div>
 
     <div id="memeSection">
       <div class="format-label" id="formatLabel">😂 Meme</div>
@@ -631,6 +682,7 @@ const HISTORY_LIMIT = 20;
 let currentMode = "type";
 let currentVibe = "meme";
 let currentMemeStyle = "relatable";
+let currentPersona = ""; // "" = default student, "__custom" = use the text box
 let uploadedImageBase64 = null;
 let uploadedImageType = null;
 let lastResult = null;
@@ -677,6 +729,24 @@ function shrinkImage(dataUrl){
     img.onerror = () => resolve(null); // e.g. HEIC on a browser that can't decode it
     img.src = dataUrl;
   });
+}
+
+function setPersona(p){
+  currentPersona = p;
+  document.querySelectorAll('#personaRow .persona-btn').forEach(b=>b.classList.toggle('active', b.dataset.persona===p));
+  const custom = document.getElementById('personaCustom');
+  custom.style.display = p === '__custom' ? 'block' : 'none';
+  if(p === '__custom') custom.focus();
+}
+
+// "a Doctor" / "an Artist" / "an Auto driver"
+function withArticle(word){
+  return (/^[aeiou]/i.test(word) ? "an " : "a ") + word;
+}
+
+function getPersona(){
+  if(currentPersona === '__custom') return document.getElementById('personaCustom').value.trim().slice(0, 40);
+  return currentPersona;
 }
 
 function handleFile(event){
@@ -729,9 +799,15 @@ async function generate(retry){
     subject: document.getElementById('subject').value,
     language: document.getElementById('language').value,
     retry: !!retry,
+    persona: getPersona(),
     // backend expects "image" | "text" (the UI's internal names are "photo" | "type")
     mode: currentMode === 'photo' ? 'image' : 'text'
   };
+
+  if(currentPersona === '__custom' && !getPersona()){
+    showError("Type a profession in the Custom box (or pick one of the options).");
+    return;
+  }
 
   if(currentMode === 'photo'){
     if(!uploadedImageBase64){ showError("Please upload a photo first."); return; }
@@ -787,7 +863,16 @@ function showError(msg){
 function renderResult(r){
   lastResult = r;
   document.getElementById('resultPanel').style.display = 'block';
-  document.getElementById('resultPill').textContent = "📌 " + (r.concept || "Concept") + " · " + (r.subject || "");
+  document.getElementById('resultPill').textContent = "📌 " + (r.concept || "Concept") + " · " + (r.subject || "")
+    + (r.persona ? " · 🎭 for " + withArticle(r.persona) : "");
+  const personaLinkBox = document.getElementById('personaLinkBox');
+  if(r.persona && r.persona_link){
+    personaLinkBox.innerHTML = "<b>🎭 Why this matters to you as " + escapeHtml(withArticle(r.persona)) + ":</b> " + escapeHtml(r.persona_link);
+    personaLinkBox.style.display = 'block';
+  } else {
+    personaLinkBox.innerHTML = '';
+    personaLinkBox.style.display = 'none';
+  }
   document.getElementById('explainBox').innerHTML = r.explanation
     ? "<b>🧠 What it actually means:</b> " + escapeHtml(r.explanation)
     : "";
@@ -1383,6 +1468,7 @@ function copyResult(ev){
   const btn = (ev && ev.currentTarget) || (ev && ev.target) || document.activeElement;
   const r = lastResult;
   let text = `${r.concept || ''} (${r.subject || ''})\n\n${r.explanation || ''}\n\n`;
+  if(r.persona_link) text += `For ${withArticle(r.persona)}: ${r.persona_link}\n\n`;
   if(r.recall_hook) text += `Recall hook: "${r.recall_hook}"\n`;
   navigator.clipboard.writeText(text).then(()=>{
     if(!btn) return;
@@ -1433,7 +1519,7 @@ function renderHistory(){
         <div class="hi-concept">${escapeHtml(h.concept)}</div>
         <div class="hi-meta">${escapeHtml(h.subject)} · ${timeStr}</div>
       </div>
-      <div class="hi-tag">${escapeHtml(h.vibe)}</div>
+      <div class="hi-tag">${escapeHtml(h.vibe)}${h.result && h.result.persona ? ' · ' + escapeHtml(h.result.persona) : ''}</div>
     </div>`;
   }).join('') + '</div>';
 }
