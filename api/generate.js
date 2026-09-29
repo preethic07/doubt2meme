@@ -291,6 +291,27 @@ Respond with ONLY a single valid JSON object (no markdown fences, no commentary)
 
 Include 3-6 items in "operations" and exactly 3-4 items in "analogy_characters". Always fill "common_mistake" with a genuine, specific misconception — never leave it generic ("students get confused") or skip it. The mascot captions, analogy characters, and common_mistake are what make this feel like an illustrated, meme-style poster rather than a plain document — always fill them, for every single topic, regardless of subject. Every tree diagram must be internally consistent — a node's children must actually make sense as a binary tree at each step, and values should stay the SAME real example across all steps (like the AVL rotation walking through one concrete tree). Everything must be 100% factually accurate — verify it in your head before writing; accuracy always wins over jokes. Output raw JSON only.`;
 
+// ---------- "Explain it like I'm a..." (profession personalization) ----------
+// The student can pick a profession (doctor, dancer, cricketer...) or type their own.
+// The profession changes ONLY the analogies/examples/jokes — never the facts.
+function cleanPersona(raw) {
+  if (!raw || typeof raw !== "string") return "";
+  // letters (any language), numbers, spaces and a few safe symbols; max 40 chars.
+  // This also stops anyone from sneaking extra instructions into the prompt.
+  return raw.replace(/[^\p{L}\p{M}\p{N} \-&'/.,]/gu, "").replace(/\s+/g, " ").trim().slice(0, 40);
+}
+
+const PERSONA_INSTRUCTION = (persona) => `
+
+PERSONALIZATION — EXPLAIN IT FOR A ${persona.toUpperCase()}:
+The reader is a ${persona}. This OVERRIDES any generic "student-life" framing above.
+- Build every setup, analogy, example, story, comic scene, character, mascot line and meme caption from the everyday world of a ${persona}: their real tools, workplace, routines, vocabulary, common situations and inside jokes.
+- Map each important part of the concept to one SPECIFIC element of a ${persona}'s work (e.g. "the stack = a doctor's pile of patient files: the last file placed on top is the first one reviewed"), so the mapping itself teaches the mechanism.
+- The academic facts, terms, numbers and definitions stay EXACTLY as correct as before — the profession changes only the analogies and humor, never the science. Keep technical terms of the concept itself.
+- Humor must be warm and respectful toward ${persona}s — never mock or stereotype the profession.
+- ADD one extra field to the same JSON object: "persona_link": "1-2 sentences, spoken directly to the ${persona}, explaining exactly how this concept shows up in (or maps onto) their own work".
+Still output ONE raw JSON object only.`;
+
 // ---------- In-memory response cache ----------
 // Free, zero-setup way to stretch the free Gemini quota: if the exact same
 // doubt+mode+vibe+language is requested again (very common during judging/demos,
@@ -302,11 +323,11 @@ const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 const CACHE_MAX_ENTRIES = 200;
 const responseCache = new Map(); // key -> { data, expires }
 
-function cacheKeyFor({ mode, text, image_base64, subject, vibe, language, retry, style }) {
+function cacheKeyFor({ mode, text, image_base64, subject, vibe, language, retry, style, persona }) {
   // "retry" deliberately busts the cache — the user explicitly asked for a fresh angle.
   if (retry) return null;
   const bodyPart = mode === "image" ? "img:" + (image_base64 || "").slice(0, 64) : "txt:" + (text || "").trim().toLowerCase();
-  return [mode, bodyPart, subject || "", vibe || "meme", language || "English", style || "relatable"].join("|");
+  return [mode, bodyPart, subject || "", vibe || "meme", language || "English", style || "relatable", (persona || "").toLowerCase()].join("|");
 }
 
 function getCached(key) {
@@ -531,7 +552,9 @@ module.exports = async (req, res) => {
     language = "English",
     retry = false,
     style = "relatable", // meme tone: relatable | savage | movie | simple
+    persona: rawPersona = "", // optional profession, e.g. "doctor", "dancer"
   } = req.body || {};
+  const persona = cleanPersona(rawPersona);
 
   if (mode !== "image" && text && text.trim().length > 600) {
     return res.status(400).json({ error: "That doubt is too long (max 600 characters) — please shorten it so the explanation stays focused." });
@@ -541,7 +564,7 @@ module.exports = async (req, res) => {
   const formatKind = ["meme", "comic", "story", "infographic"].includes(vibe) ? vibe : "meme";
   const memeStyle = ["relatable", "savage", "movie", "simple"].includes(style) ? style : "relatable";
 
-  const cacheKey = cacheKeyFor({ mode, text, image_base64, subject, vibe, language, retry, style: memeStyle });
+  const cacheKey = cacheKeyFor({ mode, text, image_base64, subject, vibe, language, retry, style: memeStyle, persona });
   const cachedResult = getCached(cacheKey);
   if (cachedResult) {
     return res.status(200).json({ ...cachedResult, _cached: true });
@@ -578,6 +601,8 @@ module.exports = async (req, res) => {
       systemPrompt = MEME_PROMPT(language, memeStyle);
   }
 
+  if (persona) systemPrompt += PERSONA_INSTRUCTION(persona);
+
   parts.push({ text: systemPrompt + "\n\n" + promptText });
   if (mode === "image") {
     parts.push({ inline_data: { mime_type: image_media_type, data: image_base64 } });
@@ -592,6 +617,7 @@ module.exports = async (req, res) => {
   parsed.is_infographic = isInfographic;
   parsed.format_kind = formatKind; // additive field: "meme" | "comic" | "story" | "infographic"
   if (formatKind === "meme") parsed.meme_style = memeStyle; // additive: relatable | savage | movie | simple
+  if (persona) parsed.persona = persona; // additive: which profession it was explained for
   setCached(cacheKey, parsed);
   return res.status(200).json(parsed);
 };
